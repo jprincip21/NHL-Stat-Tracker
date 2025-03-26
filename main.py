@@ -1,7 +1,7 @@
-from app import get_todays_games
+from app import get_games_by_date
 
 def main():
-    get_todays_games()
+    get_games_by_date()
 
 if __name__ == "__main__":
     main()
