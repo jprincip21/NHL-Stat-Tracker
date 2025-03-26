@@ -1,13 +1,12 @@
 import requests
-import json
 from datetime import date
 
-def get_todays_games():
+def get_games_by_date():
     
     today = date.today()
     print(today)
     
-    url = "https://api-web.nhle.com/v1/schedule/now"
+    url = f"https://api-web.nhle.com/v1/schedule/{today}"
 
     response = requests.get(url)
 
@@ -15,6 +14,7 @@ def get_todays_games():
         print("Failed to fetch data")
         return
     
+
     data = response.json()
     week_data = data.get("gameWeek", {})
 
@@ -31,12 +31,25 @@ def get_todays_games():
     
     print("Todays NHL games:\n")
     for game in todays_games:
-        home = game["homeTeam"]["commonName"]["default"]
-        away = game["awayTeam"]["commonName"]["default"]
-        venue = game.get("venue", {}).get("default", "Unknown Venue")
-        game_time = game.get("startTimeUTC", "Unknown Time")
+        
+        home_team_name = game["homeTeam"]["commonName"]["default"]
+        if home_team_name is None:
+            home_team_name = "Unknown Home Team"
+        
+        away_team_name = game["awayTeam"]["commonName"]["default"]
+        if away_team_name is None:
+            away_team_name = "Unknown Away Team"
 
-        print(f"{away} @ {home}")
+        venue = game["venue"]["default"]
+        if venue is None:
+            venue = "Unknown Venue"
+
+        game_time = game.get("startTimeUTC", "Unknown Time")
+        game_time = game["startTimeUTC"]
+        if game_time is None:
+            game_time = "Unknown Time"
+
+        print(f"{away_team_name} @ {home_team_name}")
         print(f"Venue: {venue}")
         print(f"Start Time (UTC): {game_time}")
         print("-" * 30)
