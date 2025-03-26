@@ -16,23 +16,21 @@ def get_todays_games():
         return
     
     data = response.json()
-
     week_data = data.get("gameWeek", {})
 
-    api_date = week_data[0]['date']
-    print(api_date)
+    todays_games = []
 
-    if str(today) == api_date:
-        games = week_data[0]['games']
+    for day in week_data:
+        if day.get("date") == str(today):
+            todays_games = day.get("games", [])
+            break
 
-    print(games)
-
-    if not games:
-        print("No games scheduled for today.")
+    if not todays_games:
+        print("No games scheduled for today")
         return
     
     print("Todays NHL games:\n")
-    for game in games:
+    for game in todays_games:
         home = game["homeTeam"]["commonName"]["default"]
         away = game["awayTeam"]["commonName"]["default"]
         venue = game.get("venue", {}).get("default", "Unknown Venue")
