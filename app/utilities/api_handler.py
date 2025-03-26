@@ -4,7 +4,7 @@ from datetime import date
 def get_games_by_date():
     
     today = date.today()
-    print(today)
+    #print(today)
     
     url = f"https://api-web.nhle.com/v1/schedule/{today}"
 
@@ -44,7 +44,6 @@ def get_games_by_date():
         if venue is None:
             venue = "Unknown Venue"
 
-        game_time = game.get("startTimeUTC", "Unknown Time")
         game_time = game["startTimeUTC"]
         if game_time is None:
             game_time = "Unknown Time"
