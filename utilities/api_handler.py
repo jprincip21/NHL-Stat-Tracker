@@ -3,6 +3,7 @@ from datetime import date
 import pytz
 
 def get_games_by_date():
+    """Function which calls NHLS api to pull game information for the user selected date"""
     
     today = date.today()
     #print(today)
