@@ -63,18 +63,12 @@ class Sidebar(ctk.CTkFrame):
         
         self.logo = ctk.CTkLabel(self, image=app_logo, text="")
         self.logo.grid(row=0, column=0, padx=5, pady=5)  #Place App logo At top of frame
+        
+        #create buttons with function sending image and rows
+        self.scores_btn = self.create_button(scoreboard_icon, 1)
+        self.standings_btn = self.create_button(standings_icon, 2)
 
-        #create a loop to add in buttons using a list of names which will correspond to the images used for the button
-        self.btn = ctk.CTkButton(self, text="", image=scoreboard_icon, fg_color="transparent") #Change btn variable names to more accurately reflect their function
-        self.btn.grid(row=1, column=0, padx=5, pady=5)
-
-        self.btn2 = ctk.CTkButton(self, text="", image=calendar_icon, fg_color="transparent")
-        self.btn2.grid(row=2, column=0, padx=5, pady=5)
-
-        self.btn3 = ctk.CTkButton(self, text="", image=standings_icon, fg_color="transparent")
-        self.btn3.grid(row=3, column=0, padx=5, pady=5)
-
-        self.grid_rowconfigure(4, weight=1)  # Spacer
+        self.grid_rowconfigure(3, weight=1)  # Spacer
 
         self.theme = ctk.IntVar(value=0)
         self.theme_switch = ctk.CTkSwitch(self, 
@@ -84,12 +78,16 @@ class Sidebar(ctk.CTkFrame):
                                     onvalue=1,
                                     command=self.change_theme,
                                     )
-        self.theme_switch.grid(row=5, column=0, padx=18, columnspan=2)
+        self.theme_switch.grid(row=4, column=0, padx=18, columnspan=2)
 
 
         self.theme_label = ctk.CTkLabel(self, text="Darkmode\n(Off)")
         self.theme_label.grid(row=6, column=0, padx=5, pady=5)
     
+    
+    def create_button(self, image, row):
+        button = ctk.CTkButton(self, text="", image=image, fg_color="transparent")
+        button.grid(row=row, column=0, padx=5, pady=5)
 
     def change_theme(self):
         """Logic to change the theme"""
@@ -101,4 +99,3 @@ class Sidebar(ctk.CTkFrame):
         else:
             ctk.set_appearance_mode("light")
             self.theme_label.configure(text="Darkmode\n(Off)")
-
