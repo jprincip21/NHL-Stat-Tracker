@@ -10,15 +10,18 @@ PADY = 5
 
 class Application(ctk.CTk):
     """GUI Logic for application"""
-    def __init__(self):  
+    def __init__(self, games_data):  
         super().__init__()
+        self.games_data = games_data
+
 
         self.title("Basic Setup")
         self.geometry("900x600") 
         self.iconbitmap(LOGO_ICON)
         self.resizable(0,0) #Disable Maximizing Code
-        ctk.set_appearance_mode("light")
         #self.state('zoomed') #Start Maximized
+        ctk.set_appearance_mode("light")
+        
         
         self.columnconfigure(0, weight=0) #Side Bar (Static Size)
         self.columnconfigure(1, weight=1) #Main Area (Stretches Frame to fill screen horizontally)
@@ -37,14 +40,22 @@ class Application(ctk.CTk):
         if self.main_area is not None:
             self.main_area.destroy()
 
-        self.main_area = frame_class(self)
+        if frame_class == ScoresFrame: # When Scores Frame is selected Send Games Data
+            self.main_area = frame_class(self, self.games_data)
+                 
+        else:
+            self.main_area = frame_class(self) #If scores frame is not selected create a basic class
+            
         self.main_area.grid(row=0, column=1, pady=PADY, padx=3, sticky="nsew") # Placed Right of Sidebar, Fills Remaining Area
         
 class ScoresFrame(ctk.CTkFrame):
     """Create Frame for displaying scores"""
-    def __init__(self, parent):
+    def __init__(self, parent, games_data):
         super().__init__(parent)
         
+        self.games_data = games_data
+        print(self.games_data)
+
         #Layout Config
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=0) #Heading
@@ -58,6 +69,26 @@ class ScoresFrame(ctk.CTkFrame):
         separator = ctk.CTkFrame(self, height=5)
         separator.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="ew")
         separator.grid_propagate(False) #Prevents Shrinking
+
+        #Display Games
+        for i in games_data:
+            home_team = games_data[i]["home_team_name"]
+            away_team = games_data[i]["away_team_name"]
+            game_time = games_data[i]["game_time"]
+
+
+            game_frame = ctk.CTkFrame(self)
+            game_frame.grid(row=i+2, column=0, padx=PADX, pady=PADY, sticky="nw")
+
+            home_team_label = ctk.CTkLabel(game_frame, text=home_team)
+            home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw")
+
+            away_team_label = ctk.CTkLabel(game_frame, text=away_team)
+            away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw")
+
+            game_time_label = ctk.CTkLabel(game_frame, text=game_time)
+            game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e")
+
 
 class StandingsFrame(ctk.CTkFrame):
     """Create Frame for displaying standings"""
@@ -89,7 +120,7 @@ class Sidebar(ctk.CTkFrame):
         self.grid_propagate(False) #Prevent Resizing Based on child widgets
         self.grid_columnconfigure(0, weight=1) #Centers All widgets
 
-        #Importing Images (May Move Soon to be Global, Also Have to update how the path is called)
+        #Importing Images
         app_logo = ctk.CTkImage(light_image=Image.open(LOGO),
                                 dark_image=Image.open(LOGO),
                                 size=(50,50))
@@ -103,7 +134,7 @@ class Sidebar(ctk.CTkFrame):
         self.logo = ctk.CTkLabel(self, image=app_logo, text="")
         self.logo.grid(row=0, column=0, padx=5, pady=5)  #Place App logo At top of frame
         
-        #create buttons with function sending image and rows
+        #create buttons with function sending image and rows and function
         self.scores_btn = self.create_button(scoreboard_icon, 1, lambda: self.update_frame(ScoresFrame))
         self.standings_btn = self.create_button(standings_icon, 2, lambda: self.update_frame(StandingsFrame))
 
