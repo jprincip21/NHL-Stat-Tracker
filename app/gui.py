@@ -11,7 +11,7 @@ class Application(ctk.CTk):
         self.games_data = games_data
 
 
-        self.title("Basic Setup")
+        self.title("NHL Stat Tracker")
         self.geometry("900x600") 
         self.iconbitmap(LOGO_ICON)
         self.resizable(0,0) #Disable Maximizing Code
@@ -79,11 +79,13 @@ class ScoresFrame(ctk.CTkFrame):
             home_team_label = ctk.CTkLabel(game_frame, text=home_team)
             home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw")
 
-            away_team_label = ctk.CTkLabel(game_frame, text=away_team)
-            away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw")
-
             game_time_label = ctk.CTkLabel(game_frame, text=game_time)
-            game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e")
+            game_time_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e")
+
+            away_team_label = ctk.CTkLabel(game_frame, text=away_team)
+            away_team_label.grid(row=2, column=0, padx=PADX, pady=PADY, sticky="sw")
+
+
 
 
 class StandingsFrame(ctk.CTkFrame):
