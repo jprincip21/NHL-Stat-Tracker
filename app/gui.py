@@ -4,10 +4,6 @@ import customtkinter as ctk
 from PIL import Image
 from assets.constants import *
 
-PADX = 5
-PADY = 5
-
-
 class Application(ctk.CTk):
     """GUI Logic for application"""
     def __init__(self, games_data):  
