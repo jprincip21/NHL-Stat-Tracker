@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+from tkcalendar import Calendar
 import customtkinter as ctk
+from datetime import datetime
 from PIL import Image
 from assets.constants import *
 
@@ -50,7 +52,8 @@ class ScoresFrame(ctk.CTkFrame):
         super().__init__(parent)
         
         self.games_data = games_data
-        print(self.games_data)
+        self.calendar_visible = False
+        self.calendar_widget = None
 
         #Layout Config
         self.columnconfigure(0, weight=1)
@@ -66,6 +69,22 @@ class ScoresFrame(ctk.CTkFrame):
         separator.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="ew")
         separator.grid_propagate(False) #Prevents Shrinking
 
+        calendar_icon = get_image(CALENDAR_ICON)
+
+        # Create a horizontal frame to hold the date label and calendar button side by side
+        date_row = ctk.CTkFrame(self)
+        date_row.grid(row=2, column=0, columnspan=2, padx=PADX, pady=PADY, sticky="w")
+        date_row.grid_columnconfigure(0, weight=0)
+        date_row.grid_columnconfigure(1, weight=0)
+
+        # Date label
+        self.date_label = ctk.CTkLabel(date_row, text=games_data[0]["date"], font=("IMPACT", 20))
+        self.date_label.grid(row=0, column=0, padx=(0, 10), pady=0)
+
+        # Calendar button
+        open_calendar = ctk.CTkButton(date_row, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30)
+        open_calendar.grid(row=0, column=1, pady=0)
+
         #Display Games
         for i in games_data:
             home_team = games_data[i]["home_team_name"]
@@ -74,7 +93,7 @@ class ScoresFrame(ctk.CTkFrame):
 
 
             game_frame = ctk.CTkFrame(self)
-            game_frame.grid(row=i+2, column=0, padx=PADX, pady=PADY, sticky="nw")
+            game_frame.grid(row=i+3, column=0, padx=PADX, pady=PADY, sticky="nw")
 
             home_team_label = ctk.CTkLabel(game_frame, text=home_team)
             home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw")
@@ -84,6 +103,31 @@ class ScoresFrame(ctk.CTkFrame):
 
             away_team_label = ctk.CTkLabel(game_frame, text=away_team)
             away_team_label.grid(row=2, column=0, padx=PADX, pady=PADY, sticky="sw")
+        
+    def toggle_calendar(self):
+        if self.calendar_visible:
+            self.calendar_widget.destroy()
+            self.calendar_visible = False
+        else:
+            # Create inline calendar right below the date row
+            self.calendar_widget = Calendar(self, selectmode='day')
+            self.calendar_widget.grid(row=3, column=0, columnspan=2, padx=15, sticky="w")
+
+            self.calendar_widget.bind("<<CalendarSelected>>", self.date_selected)
+            self.calendar_visible = True
+        
+    def date_selected(self, event):
+        selected_date = self.calendar_widget.get_date()
+        
+        selected_date = datetime.strptime(selected_date, "%m/%d/%y")
+
+        selected_date = selected_date.strftime("%Y-%m-%d")
+
+
+        self.date_label.configure(text=selected_date)
+        self.calendar_widget.destroy()
+        self.calendar_visible = False
+        print("Selected date:", selected_date)
 
 
 
@@ -123,11 +167,9 @@ class Sidebar(ctk.CTkFrame):
                                 dark_image=Image.open(LOGO),
                                 size=(50,50))
         
-        scoreboard_icon = self.get_image(SCOREBOARD_ICON)
+        scoreboard_icon = get_image(SCOREBOARD_ICON)
         
-        calendar_icon = self.get_image(CALENDAR_ICON)
-        
-        standings_icon = self.get_image(STANDINGS_ICON)
+        standings_icon = get_image(STANDINGS_ICON)
         
         self.logo = ctk.CTkLabel(self, image=app_logo, text="")
         self.logo.grid(row=0, column=0, padx=5, pady=5)  #Place App logo At top of frame
@@ -170,7 +212,7 @@ class Sidebar(ctk.CTkFrame):
             ctk.set_appearance_mode("light")
             self.theme_label.configure(text="Darkmode\n(Off)")
 
-    def get_image(self, base_path):
-        return ctk.CTkImage(light_image=Image.open(base_path + "light.png"),
+def get_image(base_path):
+    return ctk.CTkImage(light_image=Image.open(base_path + "light.png"),
                         dark_image=Image.open(base_path + "dark.png"),
                         size=(50, 50))
