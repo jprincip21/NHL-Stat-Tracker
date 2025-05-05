@@ -62,8 +62,10 @@ def get_games_by_date():
         #Convert UTC to Current Machines Timezone
         utc_time = datetime.strptime(game_time, "%Y-%m-%dT%H:%M:%SZ")
         utc_time = utc_time.replace(tzinfo=pytz.UTC)
-        local_time = utc_time.astimezone()
-        formatted_time = local_time.strftime("%I:%M %p")
+        local_time = utc_time.astimezone() #Convert UTC to device Timezone
+        formated_date = local_time.strftime("%Y-%m-%d") #Get Date
+        formatted_time = local_time.strftime("%I:%M %p") #Get Time
+        print(formated_date)
 
 
 
@@ -74,6 +76,7 @@ def get_games_by_date():
             "away_team_name" : away_team_name,
             "away_team_logo" : away_team_logo,
             "venue": venue,
+            "date" : formated_date,
             "game_time": formatted_time
         }
         
