@@ -1,10 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import Calendar
-import customtkinter as ctk
+
 from datetime import datetime
 from PIL import Image
+
+import customtkinter as ctk
 from assets.constants import *
+from utilities.api_handler import get_games_by_date
 
 #TODO: Import API_Handler, Use when code is initially run as well as when date is changed by sending the formatted date
 
