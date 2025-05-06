@@ -6,6 +6,8 @@ from datetime import datetime
 from PIL import Image
 from assets.constants import *
 
+#TODO: Import API_Handler, Use when code is initially run as well as when date is changed by sending the formatted date
+
 class Application(ctk.CTk):
     """GUI Logic for application"""
     def __init__(self, games_data):  
@@ -51,9 +53,13 @@ class ScoresFrame(ctk.CTkFrame):
     def __init__(self, parent, games_data):
         super().__init__(parent)
         
-        self.games_data = games_data
-        self.calendar_visible = False
-        self.calendar_widget = None
+        #Initialize Variables
+        self.games_data = games_data #Sent Data from Api
+        self.selected_date = games_data[0]["date"] #Grab Date from games_data
+        print(self.selected_date)
+
+        self.calendar_visible = False #St calendar Visibility to false
+        self.calendar_widget = None 
 
         #Layout Config
         self.columnconfigure(0, weight=1)
@@ -71,63 +77,95 @@ class ScoresFrame(ctk.CTkFrame):
 
         calendar_icon = get_image(CALENDAR_ICON)
 
-        # Create a horizontal frame to hold the date label and calendar button side by side
-        date_row = ctk.CTkFrame(self)
-        date_row.grid(row=2, column=0, columnspan=2, padx=PADX, pady=PADY, sticky="w")
-        date_row.grid_columnconfigure(0, weight=0)
-        date_row.grid_columnconfigure(1, weight=0)
+        # Frame to Hold Date and Date Button
+        date_frame = ctk.CTkFrame(self, corner_radius=5)
+        date_frame.grid(row=2, column=0, columnspan=2, padx=PADX, pady=PADY, sticky="ew")
+        date_frame.grid_columnconfigure(0, weight=0)
+        date_frame.grid_columnconfigure(1, weight=0)
 
-        # Date label
-        self.date_label = ctk.CTkLabel(date_row, text=games_data[0]["date"], font=("IMPACT", 20))
-        self.date_label.grid(row=0, column=0, padx=(0, 10), pady=0)
-
-        # Calendar button
-        open_calendar = ctk.CTkButton(date_row, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30)
-        open_calendar.grid(row=0, column=1, pady=0)
-
-        #Display Games
-        for i in games_data:
-            home_team = games_data[i]["home_team_name"]
-            away_team = games_data[i]["away_team_name"]
-            game_time = games_data[i]["game_time"]
-
-
-            game_frame = ctk.CTkFrame(self)
-            game_frame.grid(row=i+3, column=0, padx=PADX, pady=PADY, sticky="nw")
-
-            home_team_label = ctk.CTkLabel(game_frame, text=home_team)
-            home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw")
-
-            game_time_label = ctk.CTkLabel(game_frame, text=game_time)
-            game_time_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e")
-
-            away_team_label = ctk.CTkLabel(game_frame, text=away_team)
-            away_team_label.grid(row=2, column=0, padx=PADX, pady=PADY, sticky="sw")
         
+        # Calendar button In date_frame
+        open_calendar = ctk.CTkButton(date_frame, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30)
+        open_calendar.grid(row=0, column=0, pady=0)
+
+        # Date label in date_frame
+        self.date_label = ctk.CTkLabel(date_frame, text=games_data[0]["date"], font=("IMPACT", 20))
+        self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
+        
+        #Frame to hold selected dates games
+        games_frame = ctk.CTkFrame(self)
+        games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
+        games_frame.rowconfigure(0, weight=1)
+        games_frame.columnconfigure(0, weight=1)
+        games_frame.columnconfigure(1, weight=1)
+        
+        #Display Games
+        for i in range(0, len(games_data), 2):
+
+            game1 = games_data[i] #Get game Data
+
+            #Frame to hold first game
+            game_frame1 = ctk.CTkFrame(games_frame) #Create Frame
+            game_frame1.grid(row=i, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Frame
+
+            game_frame1.columnconfigure(0, weight=1) 
+
+            #Config of new frame
+            home_team_label = ctk.CTkLabel(game_frame1, text=game1["home_team_name"], font=("IMPACT", 14)) #Create Label
+            home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
+
+            game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
+            game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+            away_team_label = ctk.CTkLabel(game_frame1, text=game1["away_team_name"], font=("IMPACT", 14)) #Create Label
+            away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
+
+            #If a second game needs to be displayed in the same row repeat the same thing
+            if i + 1 < len(games_data):
+                game2 = games_data[i+1] #Get Game data
+
+                game_frame2 = ctk.CTkFrame(games_frame) #Create Frame
+                game_frame2.grid(row=i, column=1, padx=PADX, pady=PADY, sticky="ew") #Place Frame
+
+                game_frame2.columnconfigure(0, weight=1)
+
+                home_team_label = ctk.CTkLabel(game_frame2, text=game2["home_team_name"], font=("IMPACT", 14)) #Create Label
+                home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
+
+                game_time_label = ctk.CTkLabel(game_frame2, text=game2["game_time"], font=("IMPACT", 14)) #Create Label
+                game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                away_team_label = ctk.CTkLabel(game_frame2, text=game2["away_team_name"], font=("IMPACT", 14)) #Create Label
+                away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
+        
+
     def toggle_calendar(self):
+        """Function to toggle the calendar on and off"""
         if self.calendar_visible:
-            self.calendar_widget.destroy()
-            self.calendar_visible = False
+            self.calendar_widget.destroy() #Remove Calendar
+            self.calendar_visible = False #Update Visibility
         else:
             # Create inline calendar right below the date row
-            self.calendar_widget = Calendar(self, selectmode='day')
-            self.calendar_widget.grid(row=3, column=0, columnspan=2, padx=15, sticky="w")
+            self.calendar_widget = Calendar(self, selectmode='day') #Create Calendar
+            self.calendar_widget.grid(row=3, column=0, columnspan=2, padx=15, sticky="w") #Place Calendar
 
-            self.calendar_widget.bind("<<CalendarSelected>>", self.date_selected)
-            self.calendar_visible = True
-        
+            self.calendar_widget.bind("<<CalendarSelected>>", self.date_selected) #Bind Calendar Selected to date Selected Function
+            self.calendar_visible = True #Update Calendar Visibility
+    
     def date_selected(self, event):
-        selected_date = self.calendar_widget.get_date()
+        """Return the date when selected"""
+        updated_date = self.calendar_widget.get_date() #Grab Selected Date
         
-        selected_date = datetime.strptime(selected_date, "%m/%d/%y")
+        updated_date = datetime.strptime(updated_date, "%m/%d/%y") #get date Format
 
-        selected_date = selected_date.strftime("%Y-%m-%d")
+        updated_date = updated_date.strftime("%Y-%m-%d") #Update Date format
+        self.selected_date = updated_date
 
 
-        self.date_label.configure(text=selected_date)
-        self.calendar_widget.destroy()
-        self.calendar_visible = False
-        print("Selected date:", selected_date)
+        self.date_label.configure(text=self.selected_date) #Update Date label
+        self.calendar_widget.destroy() #Destroy the calendar Widget
+        self.calendar_visible = False #Update Visibility
+        print("Selected date:", self.selected_date) #FOR TESTING
 
 
 
@@ -143,13 +181,13 @@ class StandingsFrame(ctk.CTkFrame):
         self.rowconfigure(1, weight=0, minsize=5) #seperator
 
         #Heading label
-        heading = ctk.CTkLabel(self, text="STANDINGS", font=("IMPACT", 50))
-        heading.grid(row=0, column=0, padx=15, pady=PADY, sticky="nw" )
+        heading = ctk.CTkLabel(self, text="STANDINGS", font=("IMPACT", 50)) #Create Label
+        heading.grid(row=0, column=0, padx=15, pady=PADY, sticky="nw" ) #Place Label
 
         #Seperator Line
-        seperator = ctk.CTkFrame(self, height=5)
-        seperator.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="ew")
-        seperator.grid_propagate(False) #Prevents Shrinking
+        separator = ctk.CTkFrame(self, height=5) #Create Separator
+        separator.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Separator
+        separator.grid_propagate(False) #Prevents Shrinking
 
         
 class Sidebar(ctk.CTkFrame):
@@ -165,13 +203,13 @@ class Sidebar(ctk.CTkFrame):
         #Importing Images
         app_logo = ctk.CTkImage(light_image=Image.open(LOGO),
                                 dark_image=Image.open(LOGO),
-                                size=(50,50))
+                                size=(50,50)) #Import App Logo
         
-        scoreboard_icon = get_image(SCOREBOARD_ICON)
+        scoreboard_icon = get_image(SCOREBOARD_ICON) #Import Scoreboard Icon
         
-        standings_icon = get_image(STANDINGS_ICON)
+        standings_icon = get_image(STANDINGS_ICON) #Import Standings icon
         
-        self.logo = ctk.CTkLabel(self, image=app_logo, text="")
+        self.logo = ctk.CTkLabel(self, image=app_logo, text="") #create label 
         self.logo.grid(row=0, column=0, padx=5, pady=5)  #Place App logo At top of frame
         
         #create buttons with function sending image and rows and function
@@ -202,7 +240,7 @@ class Sidebar(ctk.CTkFrame):
         return button
 
     def change_theme(self):
-        """Logic to change the theme"""
+        """Function to change the theme"""
         theme = self.theme.get()
 
         if theme == 1:
@@ -213,6 +251,7 @@ class Sidebar(ctk.CTkFrame):
             self.theme_label.configure(text="Darkmode\n(Off)")
 
 def get_image(base_path):
+    """Function to open images"""
     return ctk.CTkImage(light_image=Image.open(base_path + "light.png"),
                         dark_image=Image.open(base_path + "dark.png"),
                         size=(50, 50))
