@@ -97,3 +97,6 @@ def get_games_by_date():
     #     print("-" * 30)
 
     return games_data # Return Games data
+
+if __name__ == "__main__":
+    get_games_by_date()
