@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkcalendar import Calendar
 
-from datetime import datetime
+from datetime import datetime, date
 from PIL import Image
 
 import customtkinter as ctk
@@ -58,10 +58,10 @@ class ScoresFrame(ctk.CTkFrame):
         
         #Initialize Variables
         self.games_data = games_data #Sent Data from Api
-        self.selected_date = games_data[0]["date"] #Grab Date from games_data
-        print(self.selected_date)
+        self.selected_date = date.today() #Grab Date from games_data
+        print(self.selected_date) # For Testing
 
-        self.calendar_visible = False #St calendar Visibility to false
+        self.calendar_visible = False #Set calendar Visibility to false
         self.calendar_widget = None 
 
         #Layout Config
@@ -92,54 +92,70 @@ class ScoresFrame(ctk.CTkFrame):
         open_calendar.grid(row=0, column=0, pady=0)
 
         # Date label in date_frame
-        self.date_label = ctk.CTkLabel(date_frame, text=games_data[0]["date"], font=("IMPACT", 20))
+        self.date_label = ctk.CTkLabel(date_frame, text=self.selected_date, font=("IMPACT", 20))
         self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
         
-        #Frame to hold selected dates games
-        games_frame = ctk.CTkFrame(self)
-        games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
-        games_frame.rowconfigure(0, weight=1)
-        games_frame.columnconfigure(0, weight=1)
-        games_frame.columnconfigure(1, weight=1)
+
         
+        
+        #Check If data Is available
+        if games_data == 0:
+
+            failed_label = ctk.CTkLabel(self, text="Failed to Fetch Data", font=("IMPACT", 24)) #Create Label
+            failed_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
+        
+        #Check if there are games on selected date
+        elif games_data == 1:
+
+            no_games_label = ctk.CTkLabel(self, text="No Games Scheduled Today", font=("IMPACT", 24)) #Create Label
+            no_games_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
+
         #Display Games
-        for i in range(0, len(games_data), 2):
+        else: 
+            #Frame to hold selected dates games
+            games_frame = ctk.CTkFrame(self)
+            games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
+            games_frame.rowconfigure(0, weight=1)
+            games_frame.columnconfigure(0, weight=1)
+            games_frame.columnconfigure(1, weight=1)
 
-            game1 = games_data[i] #Get game Data
+            for i in range(0, len(games_data), 2):
 
-            #Frame to hold first game
-            game_frame1 = ctk.CTkFrame(games_frame) #Create Frame
-            game_frame1.grid(row=i, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Frame
+                game1 = games_data[i] #Get game Data
 
-            game_frame1.columnconfigure(0, weight=1) 
+                #Frame to hold first game
+                game_frame1 = ctk.CTkFrame(games_frame) #Create Frame
+                game_frame1.grid(row=i, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Frame
 
-            #Config of new frame
-            home_team_label = ctk.CTkLabel(game_frame1, text=game1["home_team_name"], font=("IMPACT", 14)) #Create Label
-            home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
+                game_frame1.columnconfigure(0, weight=1) 
 
-            game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
-            game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
-
-            away_team_label = ctk.CTkLabel(game_frame1, text=game1["away_team_name"], font=("IMPACT", 14)) #Create Label
-            away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
-
-            #If a second game needs to be displayed in the same row repeat the same thing
-            if i + 1 < len(games_data):
-                game2 = games_data[i+1] #Get Game data
-
-                game_frame2 = ctk.CTkFrame(games_frame) #Create Frame
-                game_frame2.grid(row=i, column=1, padx=PADX, pady=PADY, sticky="ew") #Place Frame
-
-                game_frame2.columnconfigure(0, weight=1)
-
-                home_team_label = ctk.CTkLabel(game_frame2, text=game2["home_team_name"], font=("IMPACT", 14)) #Create Label
+                #Config of new frame
+                home_team_label = ctk.CTkLabel(game_frame1, text=game1["home_team_name"], font=("IMPACT", 14)) #Create Label
                 home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
 
-                game_time_label = ctk.CTkLabel(game_frame2, text=game2["game_time"], font=("IMPACT", 14)) #Create Label
+                game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
                 game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
 
-                away_team_label = ctk.CTkLabel(game_frame2, text=game2["away_team_name"], font=("IMPACT", 14)) #Create Label
+                away_team_label = ctk.CTkLabel(game_frame1, text=game1["away_team_name"], font=("IMPACT", 14)) #Create Label
                 away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
+
+                #If a second game needs to be displayed in the same row repeat the same thing
+                if i + 1 < len(games_data):
+                    game2 = games_data[i+1] #Get Game data
+
+                    game_frame2 = ctk.CTkFrame(games_frame) #Create Frame
+                    game_frame2.grid(row=i, column=1, padx=PADX, pady=PADY, sticky="ew") #Place Frame
+
+                    game_frame2.columnconfigure(0, weight=1)
+
+                    home_team_label = ctk.CTkLabel(game_frame2, text=game2["home_team_name"], font=("IMPACT", 14)) #Create Label
+                    home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
+
+                    game_time_label = ctk.CTkLabel(game_frame2, text=game2["game_time"], font=("IMPACT", 14)) #Create Label
+                    game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                    away_team_label = ctk.CTkLabel(game_frame2, text=game2["away_team_name"], font=("IMPACT", 14)) #Create Label
+                    away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
         
 
     def toggle_calendar(self):

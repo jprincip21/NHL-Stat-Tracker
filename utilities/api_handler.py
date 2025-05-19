@@ -5,6 +5,7 @@ import pytz
 def get_games_by_date():
     """Function which calls NHLS api to pull game information for the user selected date"""
     
+    games_data = {}
     today = date.today()
     #print(today)
     
@@ -13,8 +14,9 @@ def get_games_by_date():
     response = requests.get(url)
 
     if response.status_code != 200:
-        print("Failed to fetch data")
-        return "Failed to fetch data"   
+        games_data = 0
+        print("Failed to Fetch Data")
+        return games_data
     
 
     data = response.json()
@@ -28,10 +30,11 @@ def get_games_by_date():
             break
 
     if not todays_games:
-        print("No games scheduled for today")
-        return "No games scheduled for today"
+        games_data = 1
+        print("No Games Today")
+        return games_data
     
-    games_data = {}
+    
     print("Todays NHL games:\n")
     for i, game in enumerate(todays_games):
         
