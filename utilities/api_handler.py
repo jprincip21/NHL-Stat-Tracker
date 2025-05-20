@@ -2,14 +2,13 @@ import requests
 from datetime import date, datetime
 import pytz
 
-def get_games_by_date():
+def get_games_by_date(selected_date):
     """Function which calls NHLS api to pull game information for the user selected date"""
     
     games_data = {}
-    today = date.today()
     #print(today)
     
-    url = f"https://api-web.nhle.com/v1/schedule/{today}"
+    url = f"https://api-web.nhle.com/v1/schedule/{selected_date}"
 
     response = requests.get(url)
 
@@ -25,7 +24,7 @@ def get_games_by_date():
     todays_games = []
 
     for day in week_data:
-        if day.get("date") == str(today):
+        if day.get("date") == selected_date:
             todays_games = day.get("games", [])
             break
 
