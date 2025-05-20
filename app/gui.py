@@ -94,7 +94,7 @@ class ScoresFrame(ctk.CTkFrame):
         self.date_label = ctk.CTkLabel(date_frame, text=self.selected_date, font=("IMPACT", 20))
         self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
 
-        self.games_frame = GamesDisplayFrame(self, self.games_data)
+        self.games_frame = GamesDisplayFrame(self, self.games_data, self.selected_date)
         self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")    
 
     def toggle_calendar(self):
@@ -138,34 +138,38 @@ class ScoresFrame(ctk.CTkFrame):
             self.games_frame.destroy()
 
         # Recreate the games frame with new data
-        self.games_frame = GamesDisplayFrame(self, self.games_data)
+        self.games_frame = GamesDisplayFrame(self, self.games_data, self.selected_date)
         self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
 
 class GamesDisplayFrame(ctk.CTkFrame):
     """Class for Displaying games based on users selected date"""
-    def __init__(self, parent, games_data):
+    def __init__(self, parent, games_data, selected_date):
         super().__init__(parent)
 
         self.games_data = games_data
+        self.selected_date = selected_date
 
         print(self.games_data) #For Testing
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
+
 
         #Check If data Is available
         if self.games_data == 0:
 
             failed_label = ctk.CTkLabel(self, text="Failed to Fetch Data", font=("IMPACT", 24)) #Create Label
-            failed_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
+            failed_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
         
         #Check if there are games on selected date
         elif self.games_data == 1:
 
-            no_games_label = ctk.CTkLabel(self, text="No Games Scheduled Today", font=("IMPACT", 24)) #Create Label
-            no_games_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
+            no_games_label = ctk.CTkLabel(self, text=f"No Games Scheduled for {self.selected_date}", font=("IMPACT", 24)) #Create Label
+            no_games_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
         else:
+            
+            self.columnconfigure(1, weight=1) # Update Column 1 Here so previous Labels are centered
+
             for i in range(0, len(self.games_data), 2):
                 game1 = self.games_data[i]
 
