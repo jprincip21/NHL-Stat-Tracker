@@ -85,7 +85,7 @@ class ScoresFrame(ctk.CTkFrame):
         open_calendar_button.grid(row=0, column=0, pady=0)
 
         #Initalize Date and Games Data
-        self.selected_date = date.today()
+        self.selected_date = date.today().strftime("%Y-%m-%d")
         self.games_data = get_games_by_date(self.selected_date) #Sent Data from Api
 
         print(self.selected_date) # For Testing
@@ -148,7 +148,7 @@ class GamesDisplayFrame(ctk.CTkFrame):
 
         self.games_data = games_data
 
-        print(self.games_data)
+        print(self.games_data) #For Testing
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -177,11 +177,20 @@ class GamesDisplayFrame(ctk.CTkFrame):
                 home_team_label = ctk.CTkLabel(game_frame1, text=game1["home_team_name"], font=("IMPACT", 14)) #Create Label
                 home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
 
-                game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
-                game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
-
                 away_team_label = ctk.CTkLabel(game_frame1, text=game1["away_team_name"], font=("IMPACT", 14)) #Create Label
-                away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place LabelACT", 14)).grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw")
+                away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label 
+
+                if game1["home_team_score"] is not None and game1["away_team_score"] is not None:
+                    home_score_label = ctk.CTkLabel(game_frame1, text=game1["home_team_score"], font=("IMPACT", 14)) #Create Label
+                    home_score_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                    away_score_label = ctk.CTkLabel(game_frame1, text=game1["away_team_score"], font=("IMPACT", 14)) #Create Label
+                    away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label    
+
+
+                else:
+                    game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
+                    game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label                
 
                 if i + 1 < len(self.games_data):
                     game2 = self.games_data[i + 1]
@@ -193,11 +202,20 @@ class GamesDisplayFrame(ctk.CTkFrame):
                     home_team_label = ctk.CTkLabel(game_frame2, text=game2["home_team_name"], font=("IMPACT", 14)) #Create Label
                     home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
 
-                    game_time_label = ctk.CTkLabel(game_frame2, text=game2["game_time"], font=("IMPACT", 14)) #Create Label
-                    game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
-
                     away_team_label = ctk.CTkLabel(game_frame2, text=game2["away_team_name"], font=("IMPACT", 14)) #Create Label
                     away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
+                
+                    if game2["home_team_score"] is not None and game2["away_team_score"] is  not None:
+
+                        home_score_label = ctk.CTkLabel(game_frame2, text=game2["home_team_score"], font=("IMPACT", 14)) #Create Label
+                        home_score_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                        away_score_label = ctk.CTkLabel(game_frame2, text=game2["away_team_score"], font=("IMPACT", 14)) #Create Label
+                        away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label  
+
+                    else:
+                        game_time_label = ctk.CTkLabel(game_frame2, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
+                        game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label 
         
 
 class StandingsFrame(ctk.CTkFrame):
