@@ -13,10 +13,8 @@ from utilities.api_handler import get_games_by_date
 
 class Application(ctk.CTk):
     """GUI Logic for application"""
-    def __init__(self, games_data):  
+    def __init__(self):  
         super().__init__()
-        self.games_data = games_data
-
 
         self.title("NHL Stat Tracker")
         self.geometry("900x600") 
@@ -44,7 +42,7 @@ class Application(ctk.CTk):
             self.main_area.destroy()
 
         if frame_class == ScoresFrame: # When Scores Frame is selected Send Games Data
-            self.main_area = frame_class(self, self.games_data)
+            self.main_area = frame_class(self)
                  
         else:
             self.main_area = frame_class(self) #If scores frame is not selected create a basic class
@@ -53,13 +51,8 @@ class Application(ctk.CTk):
         
 class ScoresFrame(ctk.CTkFrame):
     """Create Frame for displaying scores"""
-    def __init__(self, parent, games_data):
+    def __init__(self, parent):
         super().__init__(parent)
-        
-        #Initialize Variables
-        self.games_data = games_data #Sent Data from Api
-        self.selected_date = date.today() #Grab Date from games_data
-        print(self.selected_date) # For Testing
 
         self.calendar_visible = False #Set calendar Visibility to false
         self.calendar_widget = None 
@@ -88,75 +81,21 @@ class ScoresFrame(ctk.CTkFrame):
 
         
         # Calendar button In date_frame
-        open_calendar = ctk.CTkButton(date_frame, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30)
-        open_calendar.grid(row=0, column=0, pady=0)
+        open_calendar_button = ctk.CTkButton(date_frame, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30)
+        open_calendar_button.grid(row=0, column=0, pady=0)
+
+        #Initalize Date and Games Data
+        self.selected_date = date.today()
+        self.games_data = get_games_by_date(self.selected_date) #Sent Data from Api
+
+        print(self.selected_date) # For Testing
 
         # Date label in date_frame
         self.date_label = ctk.CTkLabel(date_frame, text=self.selected_date, font=("IMPACT", 20))
         self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
-        
 
-        
-        
-        #Check If data Is available
-        if games_data == 0:
-
-            failed_label = ctk.CTkLabel(self, text="Failed to Fetch Data", font=("IMPACT", 24)) #Create Label
-            failed_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
-        
-        #Check if there are games on selected date
-        elif games_data == 1:
-
-            no_games_label = ctk.CTkLabel(self, text="No Games Scheduled Today", font=("IMPACT", 24)) #Create Label
-            no_games_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
-
-        #Display Games
-        else: 
-            #Frame to hold selected dates games
-            games_frame = ctk.CTkFrame(self)
-            games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
-            games_frame.rowconfigure(0, weight=1)
-            games_frame.columnconfigure(0, weight=1)
-            games_frame.columnconfigure(1, weight=1)
-
-            for i in range(0, len(games_data), 2):
-
-                game1 = games_data[i] #Get game Data
-
-                #Frame to hold first game
-                game_frame1 = ctk.CTkFrame(games_frame) #Create Frame
-                game_frame1.grid(row=i, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Frame
-
-                game_frame1.columnconfigure(0, weight=1) 
-
-                #Config of new frame
-                home_team_label = ctk.CTkLabel(game_frame1, text=game1["home_team_name"], font=("IMPACT", 14)) #Create Label
-                home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
-
-                game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
-                game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
-
-                away_team_label = ctk.CTkLabel(game_frame1, text=game1["away_team_name"], font=("IMPACT", 14)) #Create Label
-                away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
-
-                #If a second game needs to be displayed in the same row repeat the same thing
-                if i + 1 < len(games_data):
-                    game2 = games_data[i+1] #Get Game data
-
-                    game_frame2 = ctk.CTkFrame(games_frame) #Create Frame
-                    game_frame2.grid(row=i, column=1, padx=PADX, pady=PADY, sticky="ew") #Place Frame
-
-                    game_frame2.columnconfigure(0, weight=1)
-
-                    home_team_label = ctk.CTkLabel(game_frame2, text=game2["home_team_name"], font=("IMPACT", 14)) #Create Label
-                    home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
-
-                    game_time_label = ctk.CTkLabel(game_frame2, text=game2["game_time"], font=("IMPACT", 14)) #Create Label
-                    game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
-
-                    away_team_label = ctk.CTkLabel(game_frame2, text=game2["away_team_name"], font=("IMPACT", 14)) #Create Label
-                    away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
-        
+        self.games_frame = GamesDisplayFrame(self, self.games_data)
+        self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")    
 
     def toggle_calendar(self):
         """Function to toggle the calendar on and off"""
@@ -184,10 +123,82 @@ class ScoresFrame(ctk.CTkFrame):
         self.date_label.configure(text=self.selected_date) #Update Date label
         self.calendar_widget.destroy() #Destroy the calendar Widget
         self.calendar_visible = False #Update Visibility
+        
         print("Selected date:", self.selected_date) #FOR TESTING
 
+        self.refresh_games()
 
+    def refresh_games(self):
+        """Function for refreshing data once user selects new date"""
+        # Fetch new data
+        self.games_data = get_games_by_date(self.selected_date)
 
+        # Destroy existing game frame if it exists
+        if hasattr(self, "games_frame"):
+            self.games_frame.destroy()
+
+        # Recreate the games frame with new data
+        self.games_frame = GamesDisplayFrame(self, self.games_data)
+        self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
+
+class GamesDisplayFrame(ctk.CTkFrame):
+    """Class for Displaying games based on users selected date"""
+    def __init__(self, parent, games_data):
+        super().__init__(parent)
+
+        self.games_data = games_data
+
+        print(self.games_data)
+
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+
+        #Check If data Is available
+        if self.games_data == 0:
+
+            failed_label = ctk.CTkLabel(self, text="Failed to Fetch Data", font=("IMPACT", 24)) #Create Label
+            failed_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
+        
+        #Check if there are games on selected date
+        elif self.games_data == 1:
+
+            no_games_label = ctk.CTkLabel(self, text="No Games Scheduled Today", font=("IMPACT", 24)) #Create Label
+            no_games_label.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
+        else:
+            for i in range(0, len(self.games_data), 2):
+                game1 = self.games_data[i]
+
+                game_frame1 = ctk.CTkFrame(self)
+                game_frame1.grid(row=i, column=0, padx=PADX, pady=PADY, sticky="ew")
+                game_frame1.columnconfigure(0, weight=1)
+
+                #Config of new frame
+                home_team_label = ctk.CTkLabel(game_frame1, text=game1["home_team_name"], font=("IMPACT", 14)) #Create Label
+                home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
+
+                game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
+                game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                away_team_label = ctk.CTkLabel(game_frame1, text=game1["away_team_name"], font=("IMPACT", 14)) #Create Label
+                away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place LabelACT", 14)).grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw")
+
+                if i + 1 < len(self.games_data):
+                    game2 = self.games_data[i + 1]
+
+                    game_frame2 = ctk.CTkFrame(self)
+                    game_frame2.grid(row=i, column=1, padx=PADX, pady=PADY, sticky="ew")
+                    game_frame2.columnconfigure(0, weight=1)
+
+                    home_team_label = ctk.CTkLabel(game_frame2, text=game2["home_team_name"], font=("IMPACT", 14)) #Create Label
+                    home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
+
+                    game_time_label = ctk.CTkLabel(game_frame2, text=game2["game_time"], font=("IMPACT", 14)) #Create Label
+                    game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                    away_team_label = ctk.CTkLabel(game_frame2, text=game2["away_team_name"], font=("IMPACT", 14)) #Create Label
+                    away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
+        
 
 class StandingsFrame(ctk.CTkFrame):
     """Create Frame for displaying standings"""
