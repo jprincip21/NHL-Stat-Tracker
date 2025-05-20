@@ -44,6 +44,8 @@ def get_games_by_date(selected_date):
         home_team_logo = game["homeTeam"]["logo"]
         if home_team_logo is None:
             home_team_logo = "Unknown Logo"
+
+        home_team_score = game["homeTeam"].get("score", None)
         
         away_team_name = game["awayTeam"]["abbrev"] + " " + game["awayTeam"]["commonName"]["default"]
         if away_team_name is None:
@@ -52,6 +54,10 @@ def get_games_by_date(selected_date):
         away_team_logo = game["awayTeam"]["logo"]
         if away_team_logo is None:
             away_team_logo = "Unknown Logo"
+        
+        away_team_score = game["awayTeam"].get("score", None)
+        
+
 
         venue = game["venue"]["default"]
         if venue is None:
@@ -74,8 +80,10 @@ def get_games_by_date(selected_date):
         
         games_data[i] = {
             "home_team_name" : home_team_name,
+            "home_team_score" : home_team_score,
             "home_team_logo" : home_team_logo,
             "away_team_name" : away_team_name,
+            "away_team_score" : away_team_score,
             "away_team_logo" : away_team_logo,
             "venue": venue,
             "date" : formated_date,
