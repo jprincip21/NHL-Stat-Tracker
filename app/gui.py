@@ -9,7 +9,8 @@ import customtkinter as ctk
 from assets.constants import *
 from utilities.api_handler import get_games_by_date
 
-#TODO: Import API_Handler, Use when code is initially run as well as when date is changed by sending the formatted date
+#TODO: Add Today button to send user back to current date if a different one is selected, Disable Standings and Scores button when selected.
+#TODO: Work on scores while a game is active to display time left in game. automated refresh every 2 minutes
 
 class Application(ctk.CTk):
     """GUI Logic for application"""
@@ -97,14 +98,37 @@ class ScoresFrame(ctk.CTkFrame):
         self.games_frame = GamesDisplayFrame(self, self.games_data, self.selected_date)
         self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")    
 
+        self.scheduled_refresh()
+
     def toggle_calendar(self):
         """Function to toggle the calendar on and off"""
+        date_obj = datetime.strptime(self.selected_date, "%Y-%m-%d")
         if self.calendar_visible:
             self.calendar_widget.destroy() #Remove Calendar
             self.calendar_visible = False #Update Visibility
         else:
             # Create inline calendar right below the date row
-            self.calendar_widget = Calendar(self, selectmode='day') #Create Calendar
+            self.calendar_widget = Calendar(self, 
+                                            selectmode='day', 
+                                            firstweekday='sunday', 
+                                            date_pattern=("yyyy-mm-dd"), #Return Format from get_date() Function
+
+                                            background="#4A4A4A",
+                                            foreground="white",
+                                            headersbackground="#4A4A4A",
+                                            headersforeground="white",
+                                            normalbackground="#7C7C7C",
+                                            normalforeground="white",
+                                            weekendbackground="#7C7C7C",
+                                            weekendforeground="white",
+                                            othermonthbackground="#5A5A5A",
+                                            othermonthforeground="white",
+                                            othermonthwebackground="#5A5A5A",
+                                            othermonthweforeground="white",
+
+                                            year=date_obj.year, 
+                                            month=date_obj.month, 
+                                            day=date_obj.day) #Create Calendar
             self.calendar_widget.grid(row=3, column=0, columnspan=2, padx=15, sticky="w") #Place Calendar
 
             self.calendar_widget.bind("<<CalendarSelected>>", self.date_selected) #Bind Calendar Selected to date Selected Function
@@ -112,12 +136,7 @@ class ScoresFrame(ctk.CTkFrame):
     
     def date_selected(self, event):
         """Return the date when selected"""
-        updated_date = self.calendar_widget.get_date() #Grab Selected Date
-        
-        updated_date = datetime.strptime(updated_date, "%m/%d/%y") #get date Format
-
-        updated_date = updated_date.strftime("%Y-%m-%d") #Update Date format
-        self.selected_date = updated_date
+        self.selected_date = self.calendar_widget.get_date() #Grab Selected Date
 
 
         self.date_label.configure(text=self.selected_date) #Update Date label
@@ -127,6 +146,14 @@ class ScoresFrame(ctk.CTkFrame):
         print("Selected date:", self.selected_date) #FOR TESTING
 
         self.refresh_games()
+
+
+    def scheduled_refresh(self):
+        """Refreshes GamesDisplayFrame After 60 Seconds"""
+        print("Refreshing...")
+
+        self.refresh_games()
+        self.after(30000, self.scheduled_refresh)
 
     def refresh_games(self):
         """Function for refreshing data once user selects new date"""
@@ -140,6 +167,8 @@ class ScoresFrame(ctk.CTkFrame):
         # Recreate the games frame with new data
         self.games_frame = GamesDisplayFrame(self, self.games_data, self.selected_date)
         self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
+
+
 
 class GamesDisplayFrame(ctk.CTkFrame):
     """Class for Displaying games based on users selected date"""
@@ -189,8 +218,13 @@ class GamesDisplayFrame(ctk.CTkFrame):
                     home_score_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
 
                     away_score_label = ctk.CTkLabel(game_frame1, text=game1["away_team_score"], font=("IMPACT", 14)) #Create Label
-                    away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label    
+                    away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label   
 
+                    time_label = ctk.CTkLabel(game_frame1, text=game1["time_remaining"], font=("IMPACT", 14)) #Create Label
+                    time_label.grid(row=0, column=2, padx=PADX, pady=PADY, sticky="w") #Place Label
+
+                    period_label = ctk.CTkLabel(game_frame1, text=game1["period"], font=("IMPACT", 14)) #Create Label
+                    period_label.grid(row=0, column=3, padx=PADX, pady=PADY, sticky="e") #Place Label
 
                 else:
                     game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
@@ -215,7 +249,13 @@ class GamesDisplayFrame(ctk.CTkFrame):
                         home_score_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
 
                         away_score_label = ctk.CTkLabel(game_frame2, text=game2["away_team_score"], font=("IMPACT", 14)) #Create Label
-                        away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label  
+                        away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                        time_label = ctk.CTkLabel(game_frame2, text=game2["time_remaining"], font=("IMPACT", 14)) #Create Label
+                        time_label.grid(row=0, column=2, padx=PADX, pady=PADY, sticky="w") #Place Label
+
+                        period_label = ctk.CTkLabel(game_frame2, text=game2["period"], font=("IMPACT", 14)) #Create Label
+                        period_label.grid(row=0, column=3, padx=PADX, pady=PADY, sticky="e") #Place Label
 
                     else:
                         game_time_label = ctk.CTkLabel(game_frame2, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
