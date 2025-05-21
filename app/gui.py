@@ -219,12 +219,14 @@ class GamesDisplayFrame(ctk.CTkFrame):
 
                     away_score_label = ctk.CTkLabel(game_frame1, text=game1["away_team_score"], font=("IMPACT", 14)) #Create Label
                     away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label   
-
-                    time_label = ctk.CTkLabel(game_frame1, text=game1["time_remaining"], font=("IMPACT", 14)) #Create Label
-                    time_label.grid(row=0, column=2, padx=PADX, pady=PADY, sticky="w") #Place Label
-
+                    
                     period_label = ctk.CTkLabel(game_frame1, text=game1["period"], font=("IMPACT", 14)) #Create Label
-                    period_label.grid(row=0, column=3, padx=PADX, pady=PADY, sticky="e") #Place Label
+                    period_label.grid(row=0, column=2, padx=PADX, pady=PADY, sticky="e") #Place Label
+                    
+                    time_label = ctk.CTkLabel(game_frame1, text=game1["time_remaining"], font=("IMPACT", 14)) #Create Label
+                    time_label.grid(row=1, column=2, padx=PADX, pady=PADY, sticky="w") #Place Label
+
+
 
                 else:
                     game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
@@ -251,11 +253,12 @@ class GamesDisplayFrame(ctk.CTkFrame):
                         away_score_label = ctk.CTkLabel(game_frame2, text=game2["away_team_score"], font=("IMPACT", 14)) #Create Label
                         away_score_label.grid(row=1, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label
 
-                        time_label = ctk.CTkLabel(game_frame2, text=game2["time_remaining"], font=("IMPACT", 14)) #Create Label
-                        time_label.grid(row=0, column=2, padx=PADX, pady=PADY, sticky="w") #Place Label
-
                         period_label = ctk.CTkLabel(game_frame2, text=game2["period"], font=("IMPACT", 14)) #Create Label
-                        period_label.grid(row=0, column=3, padx=PADX, pady=PADY, sticky="e") #Place Label
+                        period_label.grid(row=0, column=2, padx=PADX, pady=PADY, sticky="e") #Place Label
+
+                        time_label = ctk.CTkLabel(game_frame2, text=game2["time_remaining"], font=("IMPACT", 14)) #Create Label
+                        time_label.grid(row=1, column=2, padx=PADX, pady=PADY, sticky="w") #Place Label
+
 
                     else:
                         game_time_label = ctk.CTkLabel(game_frame2, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
