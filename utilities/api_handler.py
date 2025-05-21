@@ -14,7 +14,7 @@ def get_games_by_date(selected_date):
 
     if response.status_code != 200:
         games_data = 0
-        print("Failed to Fetch Data")
+        print("Failed to Fetch Games")
         return games_data
     
 
@@ -36,6 +36,9 @@ def get_games_by_date(selected_date):
     
     print("Todays NHL games:\n")
     for i, game in enumerate(todays_games):
+
+        timeRemaining = None
+        period = None
         
         home_team_name = game["homeTeam"]["abbrev"] + " " + game["homeTeam"]["commonName"]["default"]
         if home_team_name is None:
@@ -44,6 +47,21 @@ def get_games_by_date(selected_date):
         home_team_logo = game["homeTeam"]["logo"]
         if home_team_logo is None:
             home_team_logo = "Unknown Logo"
+
+        if game["gameState"] == "LIVE":
+            live_stats = requests.get(f"https://api-web.nhle.com/v1/gamecenter/{game["id"]}/boxscore")
+
+            if live_stats.status_code != 200:
+                games_data = 0
+                print("Failed to Fetch Live Stats")
+                return games_data
+            
+            live_stats_data = live_stats.json()
+            timeRemaining = live_stats_data["clock"]["timeRemaining"]
+            period = f"PERIOD: {live_stats_data["periodDescriptor"]["number"]}"
+            if live_stats_data["clock"]["inIntermission"] == True:
+                period = f"INT {live_stats_data["periodDescriptor"]["number"]}"
+            
 
         home_team_score = game["homeTeam"].get("score", None)
         
@@ -57,7 +75,6 @@ def get_games_by_date(selected_date):
         
         away_team_score = game["awayTeam"].get("score", None)
         
-
 
         venue = game["venue"]["default"]
         if venue is None:
@@ -85,9 +102,13 @@ def get_games_by_date(selected_date):
             "away_team_name" : away_team_name,
             "away_team_score" : away_team_score,
             "away_team_logo" : away_team_logo,
+
             "venue": venue,
             "date" : formated_date,
-            "game_time": formatted_time
+            "game_time": formatted_time,
+
+            "period" : period,
+            "time_remaining" : timeRemaining
         }
         
 
