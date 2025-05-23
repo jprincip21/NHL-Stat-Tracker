@@ -1,4 +1,4 @@
-from app import get_games_by_date, Application
+from app import Application
 
 def main():
     
