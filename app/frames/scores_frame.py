@@ -6,7 +6,7 @@ import customtkinter as ctk
 from datetime import datetime, date
 
 from assets.constants import *
-from utilities import get_games_by_date, get_image_light_dark
+from utilities import get_games_by_date, get_image_light_dark, get_team_logo
 
 class ScoresFrame(ctk.CTkFrame):
     """Create Frame for displaying scores"""
@@ -15,6 +15,7 @@ class ScoresFrame(ctk.CTkFrame):
 
         self.calendar_visible = False #Set calendar Visibility to false
         self.calendar_widget = None 
+        self.refresh_job = None
 
         #Layout Config
         self.columnconfigure(0, weight=1)
@@ -47,7 +48,7 @@ class ScoresFrame(ctk.CTkFrame):
         self.selected_date = date.today().strftime("%Y-%m-%d")
         self.games_data = get_games_by_date(self.selected_date) #Sent Data from Api
 
-        print(self.selected_date) # For Testing
+        #print(self.selected_date) # FOR TESTING
 
         # Date label in date_frame
         self.date_label = ctk.CTkLabel(date_frame, text=self.selected_date, font=("IMPACT", 20))
@@ -94,29 +95,46 @@ class ScoresFrame(ctk.CTkFrame):
     
     def date_selected(self, event):
         """Return the date when selected"""
-        self.selected_date = self.calendar_widget.get_date() #Grab Selected Date
+        new_date = self.calendar_widget.get_date()
 
+        if new_date == self.selected_date: #If Same date is selected do nothing.
+            print("Same date selected... No Change")
+            self.calendar_widget.destroy()
+            self.calendar_visible = False
+            return 
+        
+        self.selected_date = self.calendar_widget.get_date() #Grab Selected Date
 
         self.date_label.configure(text=self.selected_date) #Update Date label
         self.calendar_widget.destroy() #Destroy the calendar Widget
         self.calendar_visible = False #Update Visibility
         
-        print("Selected date:", self.selected_date) #FOR TESTING
+        #print("Selected date:", self.selected_date) #FOR TESTING
+        
+        if self.refresh_job is not None:
+            print("Scheduled Refresh Canceled")
+            self.after_cancel(self.refresh_job)
+            self.refresh_job = None
 
-        self.refresh_games()
+        if self.selected_date == str(date.today()):
+            self.scheduled_refresh()
 
+        else: 
+            self.refresh_games()
 
     def scheduled_refresh(self):
-        """Refreshes GamesDisplayFrame After 60 Seconds"""
-        print("Refreshing...")
-
-        self.refresh_games()
-        self.after(30000, self.scheduled_refresh)
+        """Refreshes GamesDisplayFrame After 30 Seconds"""
+        
+        if self.selected_date == str(date.today()):
+            print("Scheduled Refresh...")
+            self.refresh_games()
+            self.refresh_job = self.after(30000, self.scheduled_refresh)
 
     def refresh_games(self):
         """Function for refreshing data once user selects new date"""
         # Fetch new data
         self.games_data = get_games_by_date(self.selected_date)
+        print("Refreshing...")
 
         # Destroy existing game frame if it exists
         if hasattr(self, "games_frame"):
@@ -136,12 +154,10 @@ class GamesDisplayFrame(ctk.CTkFrame):
         self.games_data = games_data
         self.selected_date = selected_date
 
-        print(self.games_data) #For Testing
+        #print(self.games_data) #For Testing
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-
-
 
         #Check If data Is available
         if self.games_data == 0:
@@ -161,15 +177,26 @@ class GamesDisplayFrame(ctk.CTkFrame):
             for i in range(0, len(self.games_data), 2):
                 game1 = self.games_data[i]
 
+                home_team1_logo = get_team_logo(game1["home_team_logo"])
+                away_team1_logo = get_team_logo(game1["away_team_logo"])
+
                 game_frame1 = ctk.CTkFrame(self)
                 game_frame1.grid(row=i, column=0, padx=PADX, pady=PADY, sticky="ew")
                 game_frame1.columnconfigure(0, weight=1)
 
                 #Config of new frame
-                home_team_label = ctk.CTkLabel(game_frame1, text=game1["home_team_name"], font=("IMPACT", 14)) #Create Label
+                home_team_label = ctk.CTkLabel(game_frame1, 
+                                               image=home_team1_logo,
+                                               compound="left", 
+                                               text=game1["home_team_name"], 
+                                               font=("IMPACT", 14)) #Create Label
                 home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
 
-                away_team_label = ctk.CTkLabel(game_frame1, text=game1["away_team_name"], font=("IMPACT", 14)) #Create Label
+                away_team_label = ctk.CTkLabel(game_frame1, 
+                                               image=away_team1_logo,
+                                               compound="left", 
+                                               text=game1["away_team_name"], 
+                                               font=("IMPACT", 14)) #Create Label
                 away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label 
 
                 if game1["home_team_score"] is not None and game1["away_team_score"] is not None:
@@ -185,8 +212,6 @@ class GamesDisplayFrame(ctk.CTkFrame):
                     time_label = ctk.CTkLabel(game_frame1, text=game1["time_remaining"], font=("IMPACT", 14)) #Create Label
                     time_label.grid(row=1, column=2, padx=PADX, pady=PADY, sticky="w") #Place Label
 
-
-
                 else:
                     game_time_label = ctk.CTkLabel(game_frame1, text=game1["game_time"], font=("IMPACT", 14)) #Create Label
                     game_time_label.grid(row=0, column=1, padx=PADX, pady=PADY, sticky="e") #Place Label                
@@ -194,14 +219,25 @@ class GamesDisplayFrame(ctk.CTkFrame):
                 if i + 1 < len(self.games_data):
                     game2 = self.games_data[i + 1]
 
+                    home_team2_logo = get_team_logo(game2["home_team_logo"])
+                    away_team2_logo = get_team_logo(game2["away_team_logo"])
+
                     game_frame2 = ctk.CTkFrame(self)
                     game_frame2.grid(row=i, column=1, padx=PADX, pady=PADY, sticky="ew")
                     game_frame2.columnconfigure(0, weight=1)
 
-                    home_team_label = ctk.CTkLabel(game_frame2, text=game2["home_team_name"], font=("IMPACT", 14)) #Create Label
+                    home_team_label = ctk.CTkLabel(game_frame2, 
+                                                   image=home_team2_logo,
+                                                   compound="left", 
+                                                   text=game2["home_team_name"], 
+                                                   font=("IMPACT", 14)) #Create Label
                     home_team_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="nw") #Place Label
 
-                    away_team_label = ctk.CTkLabel(game_frame2, text=game2["away_team_name"], font=("IMPACT", 14)) #Create Label
+                    away_team_label = ctk.CTkLabel(game_frame2, 
+                                                   image=away_team2_logo,
+                                                   compound="left", 
+                                                   text=game2["away_team_name"], 
+                                                   font=("IMPACT", 14)) #Create Label
                     away_team_label.grid(row=1, column=0, padx=PADX, pady=PADY, sticky="sw") #Place Label
                 
                     if game2["home_team_score"] is not None and game2["away_team_score"] is  not None:

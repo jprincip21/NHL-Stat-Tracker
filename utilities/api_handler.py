@@ -1,12 +1,11 @@
 import requests
-from datetime import date, datetime
+from datetime import datetime
 import pytz
 
 def get_games_by_date(selected_date):
     """Function which calls NHLS api to pull game information for the user selected date"""
     
     games_data = {}
-    #print(today)
     
     url = f"https://api-web.nhle.com/v1/schedule/{selected_date}"
 
@@ -33,8 +32,6 @@ def get_games_by_date(selected_date):
         print("No Games Today")
         return games_data
     
-    
-    print("Todays NHL games:\n")
     for i, game in enumerate(todays_games):
 
         timeRemaining = None
@@ -46,7 +43,19 @@ def get_games_by_date(selected_date):
         
         home_team_logo = game["homeTeam"]["logo"]
         if home_team_logo is None:
-            home_team_logo = "Unknown Logo"
+            home_team_logo = "Unknown Logo"  
+
+        home_team_score = game["homeTeam"].get("score", None)
+        
+        away_team_name = game["awayTeam"]["abbrev"] + " " + game["awayTeam"]["commonName"]["default"]
+        if away_team_name is None:
+            away_team_name = "Unknown Away Team"
+
+        away_team_logo = game["awayTeam"]["logo"]
+        if away_team_logo is None:
+            away_team_logo = "Unknown Logo"
+        
+        away_team_score = game["awayTeam"].get("score", None)
 
         if game["gameState"] == "LIVE":
             live_stats = requests.get(f"https://api-web.nhle.com/v1/gamecenter/{game["id"]}/boxscore")
@@ -61,19 +70,6 @@ def get_games_by_date(selected_date):
             period = f"PERIOD: {live_stats_data["periodDescriptor"]["number"]}"
             if live_stats_data["clock"]["inIntermission"] == True:
                 period = f"INT {live_stats_data["periodDescriptor"]["number"]}"
-            
-
-        home_team_score = game["homeTeam"].get("score", None)
-        
-        away_team_name = game["awayTeam"]["abbrev"] + " " + game["awayTeam"]["commonName"]["default"]
-        if away_team_name is None:
-            away_team_name = "Unknown Away Team"
-
-        away_team_logo = game["awayTeam"]["logo"]
-        if away_team_logo is None:
-            away_team_logo = "Unknown Logo"
-        
-        away_team_score = game["awayTeam"].get("score", None)
         
 
         venue = game["venue"]["default"]
@@ -90,7 +86,7 @@ def get_games_by_date(selected_date):
         local_time = utc_time.astimezone() #Convert UTC to device Timezone
         formated_date = local_time.strftime("%Y-%m-%d") #Get Date
         formatted_time = local_time.strftime("%I:%M %p") #Get Time
-        print(formated_date)
+        #print(formated_date) #FOR TESTING
 
 
 
@@ -99,6 +95,7 @@ def get_games_by_date(selected_date):
             "home_team_name" : home_team_name,
             "home_team_score" : home_team_score,
             "home_team_logo" : home_team_logo,
+
             "away_team_name" : away_team_name,
             "away_team_score" : away_team_score,
             "away_team_logo" : away_team_logo,
@@ -112,22 +109,24 @@ def get_games_by_date(selected_date):
         }
         
 
-        print(f"{games_data[i]["away_team_name"]} @ {games_data[i]["home_team_name"]}")
-        print(f"{games_data[i]["venue"]}")
-        print(f"{games_data[i]["game_time"]}")
-        print("-" * 30)
-
     #Example Usage Of games_data Varible
 
     # for i, game in enumerate(games_data):
-    #     print(f"{game[i]["away_team_name"]} @ {game[i]["home_team_name"]}")
+    #     print(f"{game[i]["home_team_name"]}")
     #     print(f"{game[i]["home_team_logo"]}")
+    #     print(f"{game[i]["home_team_score"]}")
+
+    #     print(f"{game[i]["away_team_name"]}")
     #     print(f"{game[i]["away_team_logo"]}")
+    #     print(f"{game[i]["away_team_score"]}")
+
     #     print(f"{game[i]["venue"]}")
     #     print(f"{game[i]["game_time"]}")
+
+    #     print(f"{game[i]["period"]}")
+    #     print(f"{game[i]["time_remaining"]}")
     #     print("-" * 30)
 
     return games_data # Return Games data
 
-if __name__ == "__main__":
-    get_games_by_date()
+
