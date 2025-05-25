@@ -12,6 +12,7 @@ class Sidebar(ctk.CTkFrame):
     def __init__(self, parent, update_frame):
         super().__init__(parent, width=75)
         self.update_frame = update_frame
+        self.active_button = None
         
         self.grid_propagate(False) #Prevent Resizing Based on child widgets
         self.grid_columnconfigure(0, weight=1) #Centers All widgets
@@ -27,8 +28,14 @@ class Sidebar(ctk.CTkFrame):
         self.logo.grid(row=0, column=0, padx=5, pady=5)  #Place App logo At top of frame
         
         #create buttons with function sending image and rows and function
-        self.scores_btn = self.create_button(scoreboard_icon, 1, lambda: self.update_frame(ScoresFrame))
-        self.standings_btn = self.create_button(standings_icon, 2, lambda: self.update_frame(StandingsFrame))
+        self.scores_btn = self.create_button(scoreboard_icon, 1, ScoresFrame)
+        self.standings_btn = self.create_button(standings_icon, 2, StandingsFrame)
+
+        
+        
+        self.scores_btn.configure(command=lambda: self.switch_frame(ScoresFrame, self.scores_btn))
+        self.standings_btn.configure(command=lambda: self.switch_frame(StandingsFrame, self.standings_btn))
+        self.switch_frame(ScoresFrame, self.scores_btn) #Sets Initial Frame to Scores Frame and disables Scores Btn
 
         self.grid_rowconfigure(3, weight=1)  # Spacer
 
@@ -46,10 +53,16 @@ class Sidebar(ctk.CTkFrame):
         self.theme_label.grid(row=6, column=0, padx=PADX, pady=PADY)
     
     #TODO: Add command arguement, use command to update interface & Disable button based on user selection & Current menu
-    def create_button(self, image, row, function=None):
+    def create_button(self, image, row, frame_class, disabled=False):
         """Function for Creating Buttons On the sidebar"""
-        button = ctk.CTkButton(self, text="", image=image, fg_color="transparent", command=function, anchor="center")
+        button = ctk.CTkButton(self, 
+                               text="", 
+                               image=image, 
+                               fg_color="transparent", 
+                               anchor="center",
+                               state="disabled" if disabled else "normal")
         button.grid(row=row, column=0, padx=PADX, pady=PADY)
+        button.configure(command=lambda: self.switch_frame(frame_class, button))
 
         return button
 
@@ -63,3 +76,13 @@ class Sidebar(ctk.CTkFrame):
         else:
             ctk.set_appearance_mode("light")
             self.theme_label.configure(text="Darkmode\n(Off)")
+
+    def switch_frame(self, frame_class, clicked_button):
+        self.update_frame(frame_class)
+
+        if self.active_button and self.active_button != clicked_button:
+            self.active_button.configure(state="normal", fg_color="transparent")
+
+        clicked_button.configure(state="disabled", fg_color="#3D75A0")
+
+        self.active_button = clicked_button
