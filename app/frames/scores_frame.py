@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import Calendar
+import threading
 import customtkinter as ctk
 
 from datetime import datetime, date
@@ -46,16 +47,14 @@ class ScoresFrame(ctk.CTkFrame):
 
         #Initalize Date and Games Data
         self.selected_date = date.today().strftime("%Y-%m-%d")
-        self.games_data = get_games_by_date(self.selected_date) #Sent Data from Api
+        self.progress_bar = ctk.CTkProgressBar(self, width=600,)
+        self.games_data = None  # placeholder
 
         #print(self.selected_date) # FOR TESTING
 
         # Date label in date_frame
         self.date_label = ctk.CTkLabel(date_frame, text=self.selected_date, font=("IMPACT", 20))
         self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
-
-        self.games_frame = GamesDisplayFrame(self, self.games_data, self.selected_date)
-        self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")    
 
         self.scheduled_refresh()
 
@@ -110,6 +109,8 @@ class ScoresFrame(ctk.CTkFrame):
         self.calendar_visible = False #Update Visibility
         
         #print("Selected date:", self.selected_date) #FOR TESTING
+
+        self.games_frame.grid_forget()
         
         if self.refresh_job is not None:
             print("Scheduled Refresh Canceled")
@@ -129,18 +130,45 @@ class ScoresFrame(ctk.CTkFrame):
             print("Scheduled Refresh...")
             self.refresh_games()
             self.refresh_job = self.after(30000, self.scheduled_refresh)
+            
+        else:
+            self.refresh_games()
 
     def refresh_games(self):
-        """Function for refreshing data once user selects new date"""
-        # Fetch new data
-        self.games_data = get_games_by_date(self.selected_date)
+        """Refresh games using background thread and show progress bar."""
+        
         print("Refreshing...")
 
-        # Destroy existing game frame if it exists
+        # Show and start progress bar
+        self.progress_bar.set(0)
+        self.progress_bar.start()
+        self.progress_bar.grid(row=3, column=0, padx=PADX, pady=PADY)
+
+        # Start background thread to fetch game data
+        thread = threading.Thread(target=self.fetch_games_thread)
+        thread.start()
+
+    def fetch_games_thread(self):
+        """Background thread to fetch data and update UI."""
+        try:
+            data = get_games_by_date(self.selected_date)
+            self.after(0, lambda: self.progress_bar.set(1))
+            self.after(0, lambda: self.update_games_display(data))
+        except Exception as e:
+            print(f"Error fetching game data: {e}") 
+
+    def update_games_display(self, data):
+        """Safely update the UI with new game data."""
+        self.games_data = data
+
+        # Destroy old frame
         if hasattr(self, "games_frame"):
             self.games_frame.destroy()
 
-        # Recreate the games frame with new data
+        #Remove Progress bar
+        self.progress_bar.grid_remove() 
+        self.progress_bar.stop()
+        # Create new frame
         self.games_frame = GamesDisplayFrame(self, self.games_data, self.selected_date)
         self.games_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="nsew")
 

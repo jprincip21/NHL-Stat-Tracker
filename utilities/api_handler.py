@@ -20,19 +20,19 @@ def get_games_by_date(selected_date):
     data = response.json()
     week_data = data.get("gameWeek", {})
 
-    todays_games = []
+    dates_games = []
 
     for day in week_data:
         if day.get("date") == selected_date:
-            todays_games = day.get("games", [])
+            dates_games = day.get("games", [])
             break
 
-    if not todays_games:
+    if not dates_games:
         games_data = 1
-        print("No Games Today")
+        print(f"No Games for {selected_date}")
         return games_data
     
-    for i, game in enumerate(todays_games):
+    for i, game in enumerate(dates_games):
 
         timeRemaining = None
         period = None
