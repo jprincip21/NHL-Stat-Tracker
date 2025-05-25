@@ -3,7 +3,6 @@ from tkinter import ttk
 import customtkinter as ctk
 
 from assets.constants import *
-from app.frames import ScoresFrame
 from app.widgets import Sidebar
 
 #TODO: Add Today button to send user back to current date if a different one is selected, Disable Standings and Scores button when selected.
@@ -20,6 +19,7 @@ class Application(ctk.CTk):
         self.resizable(0,0) #Disable Maximizing
         #self.state('zoomed') #Start Maximized
         ctk.set_appearance_mode("light")
+        self.main_area = None
         
         
         self.columnconfigure(0, weight=0) #Side Bar (Static Size)
@@ -31,8 +31,7 @@ class Application(ctk.CTk):
         side_bar.grid(row=0, column=0, pady=PADY, padx=PADX, sticky="nsw") #Placed on Left of Screen, sticks to Top, Bottom & Left
         
         #Main_area Placement for dynamic Content
-        self.main_area = None
-        self.update_frame(ScoresFrame)
+
 
     def update_frame(self, frame_class):
         """Replace the current frame in main_area with a new one."""

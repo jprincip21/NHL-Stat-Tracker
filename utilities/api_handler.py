@@ -130,3 +130,19 @@ def get_games_by_date(selected_date):
     return games_data # Return Games data
 
 
+def get_standings():
+
+    standings = {}
+    
+    url = f"https://api-web.nhle.com/v1/standings/now"
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        standings = 0
+        print("Failed to Fetch Standings")
+        return standings
+    
+    data = response.json()
+
+    standings = data.get("standings", {})
