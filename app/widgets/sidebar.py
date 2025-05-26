@@ -19,50 +19,45 @@ class Sidebar(ctk.CTkFrame):
 
         #Importing Images
         app_logo = get_image_default(LOGO)
+
+        theme_icon = get_image_light_dark(THEME_ICON)
         
         scoreboard_icon = get_image_light_dark(SCOREBOARD_ICON) #Import Scoreboard Icon
         
         standings_icon = get_image_light_dark(STANDINGS_ICON) #Import Standings icon
+
+        
         
         self.logo = ctk.CTkLabel(self, image=app_logo, text="") #create label 
         self.logo.grid(row=0, column=0, padx=5, pady=5)  #Place App logo At top of frame
         
         #create buttons with function sending image and rows and function
-        self.scores_btn = self.create_button(scoreboard_icon, 1, ScoresFrame)
-        self.standings_btn = self.create_button(standings_icon, 2, StandingsFrame)
-
-        
+        self.scores_btn = self.create_button(scoreboard_icon, 1)
+        self.standings_btn = self.create_button(standings_icon, 2)
         
         self.scores_btn.configure(command=lambda: self.switch_frame(ScoresFrame, self.scores_btn))
         self.standings_btn.configure(command=lambda: self.switch_frame(StandingsFrame, self.standings_btn))
+
         self.switch_frame(ScoresFrame, self.scores_btn) #Sets Initial Frame to Scores Frame and disables Scores Btn
 
         self.grid_rowconfigure(3, weight=1)  # Spacer
 
-        self.theme = ctk.IntVar(value=0)
-        self.theme_switch = ctk.CTkSwitch(self, 
-                                    text="", 
-                                    variable=self.theme, 
-                                    offvalue=0, 
-                                    onvalue=1,
-                                    command=self.change_theme,
-                                    )
-        self.theme_switch.grid(row=4, column=0, padx=18, columnspan=2)
-
-        self.theme_label = ctk.CTkLabel(self, text="Darkmode\n(Off)")
-        self.theme_label.grid(row=6, column=0, padx=PADX, pady=PADY)
+        self.theme = ctk.StringVar(self, value="light")
+        self.theme_button = self.create_button(theme_icon, 4, command=self.change_theme)
+        self.theme_button.configure(hover="false")
     
     #TODO: Add command arguement, use command to update interface & Disable button based on user selection & Current menu
-    def create_button(self, image, row, frame_class, disabled=False):
+    def create_button(self, image, row, disabled=False, command=None):
         """Function for Creating Buttons On the sidebar"""
         button = ctk.CTkButton(self, 
                                text="", 
                                image=image, 
                                fg_color="transparent", 
                                anchor="center",
+                               hover=False,
+                               command= command if command is not None else None,
                                state="disabled" if disabled else "normal")
         button.grid(row=row, column=0, padx=PADX, pady=PADY)
-        button.configure(command=lambda: self.switch_frame(frame_class, button))
 
         return button
 
@@ -70,12 +65,12 @@ class Sidebar(ctk.CTkFrame):
         """Function to change the theme"""
         theme = self.theme.get()
 
-        if theme == 1:
+        if theme == "light":
             ctk.set_appearance_mode("dark")
-            self.theme_label.configure(text="Darkmode\n(On)")
+            self.theme.set("dark")
         else:
             ctk.set_appearance_mode("light")
-            self.theme_label.configure(text="Darkmode\n(Off)")
+            self.theme.set("light")
 
     def switch_frame(self, frame_class, clicked_button):
         self.update_frame(frame_class)
