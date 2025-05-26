@@ -8,5 +8,7 @@ CALENDAR_ICON = "assets/sidebar/calendar-"
 
 STANDINGS_ICON = "assets/sidebar/standings-"
 
+THEME_ICON = "assets/sidebar/theme-"
+
 PADX = 5
 PADY = 5
