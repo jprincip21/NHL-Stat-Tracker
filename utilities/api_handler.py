@@ -156,6 +156,7 @@ def get_standings():
             "games_played" : team["gamesPlayed"],
             "record" : f"{team["wins"]}-{team["losses"]}-{team["otLosses"]}", 
             "points" : team["points"],
+            "points_percent" : team["pointPctg"],
             "regulation_wins" : team["regulationWins"],
             "regulation_ot_wins" : team["regulationPlusOtWins"],
             "goals_for" : team["goalFor"],
