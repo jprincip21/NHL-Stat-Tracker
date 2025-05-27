@@ -35,15 +35,15 @@ class ScoresFrame(ctk.CTkFrame):
         calendar_icon = get_image_light_dark(CALENDAR_ICON)
 
         # Frame to Hold Date and Date Button
-        date_frame = ctk.CTkFrame(self, corner_radius=5)
-        date_frame.grid(row=2, column=0, columnspan=2, padx=PADX, pady=PADY, sticky="ew")
-        date_frame.grid_columnconfigure(0, weight=0)
-        date_frame.grid_columnconfigure(1, weight=0)
+        self.date_frame = ctk.CTkFrame(self, corner_radius=5)
+        self.date_frame.grid(row=2, column=0, columnspan=2, padx=PADX, pady=PADY, sticky="ew")
+        self.date_frame.grid_columnconfigure(0, weight=0)
+        self.date_frame.grid_columnconfigure(1, weight=0)
 
         
         # Calendar button In date_frame
-        open_calendar_button = ctk.CTkButton(date_frame, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30, anchor="center")
-        open_calendar_button.grid(row=0, column=0, pady=0)
+        self.open_calendar_button = ctk.CTkButton(self.date_frame, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30, anchor="center")
+        self.open_calendar_button.grid(row=0, column=0, pady=0)
 
         #Initalize Date and Games Data
         self.selected_date = date.today().strftime("%Y-%m-%d")
@@ -53,7 +53,7 @@ class ScoresFrame(ctk.CTkFrame):
         #print(self.selected_date) # FOR TESTING
 
         # Date label in date_frame
-        self.date_label = ctk.CTkLabel(date_frame, text=self.selected_date, font=("IMPACT", 20))
+        self.date_label = ctk.CTkLabel(self.date_frame, text=self.selected_date, font=("IMPACT", 20))
         self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
 
         self.scheduled_refresh()

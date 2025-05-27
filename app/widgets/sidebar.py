@@ -47,7 +47,7 @@ class Sidebar(ctk.CTkFrame):
         self.theme_button.configure(hover="false")
     
     #TODO: Add command arguement, use command to update interface & Disable button based on user selection & Current menu
-    def create_button(self, image, row, disabled=False, command=None):
+    def create_button(self, image, row, command=None):
         """Function for Creating Buttons On the sidebar"""
         button = ctk.CTkButton(self, 
                                text="", 
@@ -55,8 +55,8 @@ class Sidebar(ctk.CTkFrame):
                                fg_color="transparent", 
                                anchor="center",
                                hover=False,
-                               command= command if command is not None else None,
-                               state="disabled" if disabled else "normal")
+                               command= command if command is not None else None)
+                               
         button.grid(row=row, column=0, padx=PADX, pady=PADY)
 
         return button

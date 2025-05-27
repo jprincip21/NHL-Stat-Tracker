@@ -27,10 +27,9 @@ class Application(ctk.CTk):
         self.rowconfigure(0, weight=1) #Strech Frames to fill screen vertically
 
         #Side Bar Placement With access to Show Frame Function
-        side_bar = Sidebar(self, self.update_frame)
-        side_bar.grid(row=0, column=0, pady=PADY, padx=PADX, sticky="nsw") #Placed on Left of Screen, sticks to Top, Bottom & Left
+        self.side_bar = Sidebar(self, self.update_frame)
+        self.side_bar.grid(row=0, column=0, pady=PADY, padx=PADX, sticky="nsw") #Placed on Left of Screen, sticks to Top, Bottom & Left
         
-        #Main_area Placement for dynamic Content
 
 
     def update_frame(self, frame_class):
