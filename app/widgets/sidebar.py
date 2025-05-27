@@ -27,7 +27,6 @@ class Sidebar(ctk.CTkFrame):
         standings_icon = get_image_light_dark(STANDINGS_ICON) #Import Standings icon
 
         
-        
         self.logo = ctk.CTkLabel(self, image=app_logo, text="") #create label 
         self.logo.grid(row=0, column=0, padx=5, pady=5)  #Place App logo At top of frame
         
@@ -46,7 +45,6 @@ class Sidebar(ctk.CTkFrame):
         self.theme_button = self.create_button(theme_icon, 4, command=self.change_theme)
         self.theme_button.configure(hover="false")
     
-    #TODO: Add command arguement, use command to update interface & Disable button based on user selection & Current menu
     def create_button(self, image, row, command=None):
         """Function for Creating Buttons On the sidebar"""
         button = ctk.CTkButton(self, 
@@ -73,6 +71,7 @@ class Sidebar(ctk.CTkFrame):
             self.theme.set("light")
 
     def switch_frame(self, frame_class, clicked_button):
+        """Updates frame and buttons"""
         self.update_frame(frame_class)
 
         if self.active_button and self.active_button != clicked_button:
