@@ -149,7 +149,7 @@ def get_standings():
             #Team Info
             "team_name" : team["teamAbbrev"]["default"] + " " + team["teamCommonName"]["default"],
             "team_logo" : team["teamLogo"],
-            "conferece" : team["conferenceName"],
+            "conference" : team["conferenceName"],
             "division" : team["divisionName"],
 
             #Team Stats
@@ -165,7 +165,7 @@ def get_standings():
             "shootout" : f"{team["shootoutWins"]}-{team["shootoutLosses"]}",
             "last_ten" : f"{team["l10Wins"]}-{team["l10Losses"]}-{team["l10OtLosses"]}"
         })
-    for team in standings:
-        print(team)
+
+    return standings
         
 
