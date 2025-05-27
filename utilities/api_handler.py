@@ -131,18 +131,40 @@ def get_games_by_date(selected_date):
 
 
 def get_standings():
-
-    standings = {}
-    
+    """Function to fetch current League standings"""
     url = f"https://api-web.nhle.com/v1/standings/now"
-
     response = requests.get(url)
 
     if response.status_code != 200:
-        standings = 0
         print("Failed to Fetch Standings")
-        return standings
+        return []
     
     data = response.json()
+    standings_data = data.get("standings", [])
 
-    standings = data.get("standings", {})
+    standings = []
+    for team in standings_data:
+
+        standings.append({
+            #Team Info
+            "team_name" : team["teamAbbrev"]["default"] + " " + team["teamCommonName"]["default"],
+            "team_logo" : team["teamLogo"],
+            "conferece" : team["conferenceName"],
+            "division" : team["divisionName"],
+
+            #Team Stats
+            "games_played" : team["gamesPlayed"],
+            "record" : f"{team["wins"]}-{team["losses"]}-{team["otLosses"]}", 
+            "points" : team["points"],
+            "regulation_wins" : team["regulationWins"],
+            "regulation_ot_wins" : team["regulationPlusOtWins"],
+            "goals_for" : team["goalFor"],
+            "goals_against" : team["goalAgainst"],
+            "goal_diff" : team["goalDifferential"],
+            "shootout" : f"{team["shootoutWins"]}-{team["shootoutLosses"]}",
+            "last_ten" : f"{team["l10Wins"]}-{team["l10Losses"]}-{team["l10OtLosses"]}"
+        })
+    for team in standings:
+        print(team)
+        
+
