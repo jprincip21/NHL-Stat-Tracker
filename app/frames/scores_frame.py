@@ -47,7 +47,7 @@ class ScoresFrame(ctk.CTkFrame):
 
         #Initalize Date and Games Data
         self.selected_date = date.today().strftime("%Y-%m-%d")
-        self.progress_bar = ctk.CTkProgressBar(self, width=600,)
+        self.progress_bar = ctk.CTkProgressBar(self, width=600)
         self.games_data = None  # placeholder
 
         #print(self.selected_date) # FOR TESTING
@@ -174,13 +174,15 @@ class ScoresFrame(ctk.CTkFrame):
 
 
 
-class GamesDisplayFrame(ctk.CTkFrame):
+class GamesDisplayFrame(ctk.CTkScrollableFrame):
     """Class for Displaying games based on users selected date"""
     def __init__(self, parent, games_data, selected_date):
-        super().__init__(parent)
+        super().__init__(parent, height=410)
 
+        
         self.games_data = games_data
         self.selected_date = selected_date
+        self._scrollbar.grid_remove()
 
         #print(self.games_data) #For Testing
 
@@ -199,6 +201,8 @@ class GamesDisplayFrame(ctk.CTkFrame):
             no_games_label = ctk.CTkLabel(self, text=f"No Games Scheduled for {self.selected_date}", font=("IMPACT", 24)) #Create Label
             no_games_label.grid(row=0, column=0, padx=PADX, pady=PADY, sticky="ew") #Place Label
         else:
+            if len(games_data) > 9: 
+                self._scrollbar.grid()
             
             self.columnconfigure(1, weight=1) # Update Column 1 Here so previous Labels are centered
 
