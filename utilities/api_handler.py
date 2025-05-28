@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from .get_images import get_team_logo
 import pytz
 
 def get_games_by_date(selected_date):
@@ -148,7 +149,7 @@ def get_standings():
         standings.append({
             #Team Info
             "team_name" : team["teamAbbrev"]["default"] + " " + team["teamCommonName"]["default"],
-            "team_logo" : team["teamLogo"],
+            "team_logo" : get_team_logo(team["teamLogo"]),
             "conference" : team["conferenceName"],
             "division" : team["divisionName"],
 
