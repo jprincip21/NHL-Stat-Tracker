@@ -56,8 +56,6 @@ class ScoresFrame(ctk.CTkFrame):
         self.date_label = ctk.CTkLabel(self.date_frame, text=self.selected_date, font=("IMPACT", 20))
         self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
 
-        self.scheduled_refresh()
-
     def toggle_calendar(self):
         """Function to toggle the calendar on and off"""
         date_obj = datetime.strptime(self.selected_date, "%Y-%m-%d")
@@ -112,15 +110,14 @@ class ScoresFrame(ctk.CTkFrame):
 
         self.games_frame.grid_forget()
         
-        if self.refresh_job is not None:
-            print("Scheduled Refresh Canceled")
-            self.after_cancel(self.refresh_job)
-            self.refresh_job = None
+        # if self.refresh_job is not None:
+        #     self.stop_auto_refresh()
 
         if self.selected_date == str(date.today()):
             self.scheduled_refresh()
 
         else: 
+            self.stop_auto_refresh()
             self.refresh_games()
 
     def scheduled_refresh(self):
@@ -129,10 +126,16 @@ class ScoresFrame(ctk.CTkFrame):
         if self.selected_date == str(date.today()):
             print("Scheduled Refresh...")
             self.refresh_games()
-            self.refresh_job = self.after(30000, self.scheduled_refresh)
+            self.refresh_job = self.after(5000, self.scheduled_refresh)
             
         else:
             self.refresh_games()
+
+    def stop_auto_refresh(self):
+        if hasattr(self, 'refresh_job') and self.refresh_job is not None:
+            print("Cancelled Scheduled Refresh...")
+            self.after_cancel(self.refresh_job)
+            self.refresh_job = None
 
     def refresh_games(self):
         """Refresh games using background thread and show progress bar."""

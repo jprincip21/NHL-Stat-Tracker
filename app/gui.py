@@ -4,6 +4,7 @@ import customtkinter as ctk
 
 from assets.constants import *
 from app.widgets import Sidebar
+from app.frames import *
 
 #TODO: Add Today button to send user back to current date if a different one is selected, Disable Standings and Scores button when selected.
 
@@ -19,6 +20,8 @@ class Application(ctk.CTk):
         #self.state('zoomed') #Start Maximized
         ctk.set_appearance_mode("light")
         self.main_area = None
+        self.frames = {ScoresFrame : ScoresFrame(self), 
+                       StandingsFrame : StandingsFrame(self)}
         
         
         self.columnconfigure(0, weight=0) #Side Bar (Static Size)
@@ -33,8 +36,15 @@ class Application(ctk.CTk):
 
     def update_frame(self, frame_class):
         """Replace the current frame in main_area with a new one."""
-        if self.main_area is not None:
-            self.main_area.destroy()
+        # Hide current frame
 
-        self.main_area = frame_class(self) #If scores frame is not selected create a basic class 
-        self.main_area.grid(row=0, column=1, pady=PADY, padx=3, sticky="nsew") # Placed Right of Sidebar, Fills Remaining Area
+        if hasattr(self, 'main_area') and self.main_area is not None:
+            if hasattr(self.main_area, "stop_auto_refresh"):
+                self.main_area.stop_auto_refresh()
+            self.main_area.grid_forget()
+
+        self.main_area = self.frames[frame_class]
+        self.main_area.grid(row=0, column=1, pady=PADY, padx=3, sticky="nsew")
+
+        if hasattr(self.main_area, "scheduled_refresh"):
+                self.main_area.scheduled_refresh()

@@ -149,8 +149,7 @@ class StandingsFrame(ctk.CTkFrame):
         self.progress_bar.grid_remove() 
         self.progress_bar.stop()
         self.change_filter(self.division_btn, "Division") #Sets Default Frame
-        # for team in standings:
-        #     print(team)
+
         
     def organize_standings(self):
         """Function to Organize Standings by points, Conference and Division"""
@@ -173,8 +172,10 @@ class StandingsFrame(ctk.CTkFrame):
         for div in self.division_standings:
             self.division_standings[div].sort(key=lambda x:x["points"], reverse=True) #Sort Division Standings
 
+#TODO: Instead of Destroy, Update Each filter to its own frame so it can be stored and redisplayed
     def render_standings(self, filter_type):
         """Function which renders standings by sent filter type"""
+        
         if hasattr(self, "standings_display_frame"):
             self.standings_display_frame.destroy()
 
@@ -198,7 +199,7 @@ class StandingsFrame(ctk.CTkFrame):
     def render_group_standings(self, grouped_data, frame):
         """Function which creates a label of category and then calls render team row to display teams in that category"""
         current_row = 0
-        for group_name, teams in grouped_data.items(): #Testing
+        for group_name, teams in grouped_data.items():
             conference_label = ctk.CTkLabel(self.standings_display_frame,
                                             text=group_name,
                                             font=("IMPACT", 20),
