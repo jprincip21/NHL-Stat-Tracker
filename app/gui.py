@@ -6,7 +6,6 @@ from assets.constants import *
 from app.widgets import Sidebar
 from app.frames import *
 
-#TODO: Add Today button to send user back to current date if a different one is selected, Disable Standings and Scores button when selected.
 
 class Application(ctk.CTk):
     """GUI Logic for application"""
