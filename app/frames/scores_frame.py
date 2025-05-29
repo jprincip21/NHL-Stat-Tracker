@@ -9,6 +9,8 @@ from datetime import datetime, date
 from assets.constants import *
 from utilities import get_games_by_date, get_image_light_dark, get_team_logo
 
+#TODO: Add Today button to send user back to current date if a different one is selected, Disable Standings and Scores button when selected.
+
 class ScoresFrame(ctk.CTkFrame):
     """Create Frame for displaying scores"""
     def __init__(self, parent):
@@ -33,18 +35,18 @@ class ScoresFrame(ctk.CTkFrame):
         separator.grid_propagate(False) #Prevents Shrinking
 
         calendar_icon = get_image_light_dark(CALENDAR_ICON)
+        today_icon = get_image_light_dark(TODAY_ICON)
 
         # Frame to Hold Date and Date Button
         self.date_frame = ctk.CTkFrame(self, corner_radius=5)
         self.date_frame.grid(row=2, column=0, columnspan=2, padx=PADX, pady=PADY, sticky="ew")
         self.date_frame.grid_columnconfigure(0, weight=0)
         self.date_frame.grid_columnconfigure(1, weight=0)
+        self.date_frame.grid_columnconfigure(2, weight=1)
+        self.date_frame.grid_columnconfigure(3, weight=0)
 
         
-        # Calendar button In date_frame
-        self.open_calendar_button = ctk.CTkButton(self.date_frame, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30, anchor="center")
-        self.open_calendar_button.grid(row=0, column=0, pady=0)
-
+       
         #Initalize Date and Games Data
         self.selected_date = date.today().strftime("%Y-%m-%d")
         self.progress_bar = ctk.CTkProgressBar(self, width=600)
@@ -53,8 +55,28 @@ class ScoresFrame(ctk.CTkFrame):
         #print(self.selected_date) # FOR TESTING
 
         # Date label in date_frame
+
+         # Calendar button In date_frame
+        self.open_calendar_button = ctk.CTkButton(self.date_frame, text="", image=calendar_icon, fg_color="transparent", command=self.toggle_calendar, width=30, anchor="center")
+        self.open_calendar_button.grid(row=0, column=0, pady=0)
+
         self.date_label = ctk.CTkLabel(self.date_frame, text=self.selected_date, font=("IMPACT", 20))
         self.date_label.grid(row=0, column=1, padx=PADX, pady=0)
+
+        self.today_button = ctk.CTkButton(self.date_frame, 
+                                          text="",
+                                          image=today_icon, 
+                                          font=("IMPACT", 20),  
+                                          width=30,
+                                          height=30,
+                                          fg_color="transparent",
+                                          text_color=("black", "white"),
+                                          command=self.today_button_click)
+
+    def today_button_click(self):
+        self.today_button.grid_remove()
+        self.selected_date = date.today().strftime("%Y-%m-%d")
+        self.date_selected()
 
     def toggle_calendar(self):
         """Function to toggle the calendar on and off"""
@@ -64,7 +86,7 @@ class ScoresFrame(ctk.CTkFrame):
             self.calendar_visible = False #Update Visibility
         else:
             # Create inline calendar right below the date row
-            self.calendar_widget = Calendar(self, 
+            self.calendar_widget = Calendar(self.date_frame, 
                                             selectmode='day', 
                                             firstweekday='sunday', 
                                             date_pattern=("yyyy-mm-dd"), #Return Format from get_date() Function
@@ -85,12 +107,12 @@ class ScoresFrame(ctk.CTkFrame):
                                             year=date_obj.year, 
                                             month=date_obj.month, 
                                             day=date_obj.day) #Create Calendar
-            self.calendar_widget.grid(row=3, column=0, columnspan=2, padx=15, sticky="w") #Place Calendar
+            self.calendar_widget.grid(row=1, column=0, columnspan=2, padx=15, sticky="w") #Place Calendar
 
             self.calendar_widget.bind("<<CalendarSelected>>", self.date_selected) #Bind Calendar Selected to date Selected Function
             self.calendar_visible = True #Update Calendar Visibility
     
-    def date_selected(self, event):
+    def date_selected(self, event=None):
         """Return the date when selected"""
         new_date = self.calendar_widget.get_date()
 
@@ -100,7 +122,8 @@ class ScoresFrame(ctk.CTkFrame):
             self.calendar_visible = False
             return 
         
-        self.selected_date = self.calendar_widget.get_date() #Grab Selected Date
+        if event is not None: #If today button is not clicked Get date from Calendar
+            self.selected_date = self.calendar_widget.get_date() #Grab Selected Date
 
         self.date_label.configure(text=self.selected_date) #Update Date label
         self.calendar_widget.destroy() #Destroy the calendar Widget
@@ -114,9 +137,11 @@ class ScoresFrame(ctk.CTkFrame):
         #     self.stop_auto_refresh()
 
         if self.selected_date == str(date.today()):
+            self.today_button.grid_remove() #Remove Today Button If Selected Date is today
             self.scheduled_refresh()
 
         else: 
+            self.today_button.grid(row=0, column=3, padx=PADX, pady=0) #Add Today Button If Selected Date is not today
             self.stop_auto_refresh()
             self.refresh_games()
 
@@ -126,7 +151,7 @@ class ScoresFrame(ctk.CTkFrame):
         if self.selected_date == str(date.today()):
             print("Scheduled Refresh...")
             self.refresh_games()
-            self.refresh_job = self.after(5000, self.scheduled_refresh)
+            self.refresh_job = self.after(30000, self.scheduled_refresh)
             
         else:
             self.refresh_games()
