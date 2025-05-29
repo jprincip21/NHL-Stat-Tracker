@@ -6,6 +6,8 @@ SCOREBOARD_ICON = "assets/sidebar/scoreboard-"
 
 CALENDAR_ICON = "assets/sidebar/calendar-"
 
+TODAY_ICON = "assets/sidebar/today-"
+
 STANDINGS_ICON = "assets/sidebar/standings-"
 
 THEME_ICON = "assets/sidebar/theme-"
