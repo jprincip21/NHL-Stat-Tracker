@@ -57,6 +57,8 @@ class StandingsFrame(ctk.CTkFrame):
         self.standings_main_frame.columnconfigure(4, weight=0)
         
         self.standings_main_frame.grid(row=3, column=0, padx=PADX, pady=PADY, sticky="ew")
+        self.standings_current_frame = None #Placeholder
+        self.standings_frame_list = {} #Placeholder
 
         labels_frame = ctk.CTkFrame(self.standings_main_frame) 
         labels_frame.grid(row=0, column=0, padx=PADX, pady=PADY) 
@@ -82,12 +84,23 @@ class StandingsFrame(ctk.CTkFrame):
 
         self.progress_bar = ctk.CTkProgressBar(self.standings_main_frame, width=600, determinate_speed=0.25)
         self.overall_standings = None    
+
         self.conference_standings = {"Eastern" : [], 
                                      "Western" : []}
+        
         self.division_standings = {"Atlantic" : [], 
                                    "Metropolitan" : [], 
                                    "Central" : [], 
                                    "Pacific" : []}
+        
+        self.wild_card_standings = {"Eastern" : {"Atlantic" : [],
+                                                 "Metropolitan" : [],
+                                                 "Wild Card": []}, 
+                                   
+                                   "Central" : {"Pacific" : [],
+                                                "Western" : [],
+                                                "Wild Card": []}
+                                                }
         
         self.fetch_standings()
 
@@ -113,7 +126,6 @@ class StandingsFrame(ctk.CTkFrame):
 
         clicked_button.configure(state="disabled", fg_color="#3D75A0")
         
-
         self.active_button = clicked_button
 
     def fetch_standings(self):
@@ -133,6 +145,7 @@ class StandingsFrame(ctk.CTkFrame):
             data = get_standings()
             self.after(0, lambda: self.progress_bar.set(1))
             self.after(0, lambda: self.process_standings(data))
+            
         except Exception as e:
             print(f"Error fetching standings data: {e}") 
 
@@ -154,17 +167,22 @@ class StandingsFrame(ctk.CTkFrame):
     def organize_standings(self):
         """Function to Organize Standings by points, Conference and Division"""
         # Clear existing entries in each list
+        
+        self.overall_standings.sort(key=lambda x: x["points"], reverse=True) #Sort Standings
+        
         for conf in self.conference_standings:
             self.conference_standings[conf].clear()
 
         for div in self.division_standings:
             self.division_standings[div].clear()
 
+        for conf in self.wild_card_standings:
+            for div in self.wild_card_standings[conf]:
+                self.wild_card_standings[conf][div].clear()
+
         for team in self.overall_standings:
             self.conference_standings[team["conference"]].append(team) #Seperate Teams By conference
             self.division_standings[team["division"]].append(team) # Seperate Teams by Division
-
-        self.overall_standings.sort(key=lambda x: x["points"], reverse=True) #Sort Standings
         
         for conf in self.conference_standings:
             self.conference_standings[conf].sort(key=lambda x:x["points"], reverse=True) #Sort Conference Standings
@@ -172,35 +190,43 @@ class StandingsFrame(ctk.CTkFrame):
         for div in self.division_standings:
             self.division_standings[div].sort(key=lambda x:x["points"], reverse=True) #Sort Division Standings
 
-#TODO: Instead of Destroy, Update Each filter to its own frame so it can be stored and redisplayed
+
     def render_standings(self, filter_type):
-        """Function which renders standings by sent filter type"""
+        """Function which renders standings by sent filter type"""  
+
+        if hasattr(self, "standings_current_frame") and self.standings_current_frame is not None: 
+            self.standings_current_frame.grid_forget() #Hide current frame if there is one being displayed
         
-        if hasattr(self, "standings_display_frame"):
-            self.standings_display_frame.destroy()
+        if filter_type not in self.standings_frame_list: #If filter has not yet been selected
+            frame = ctk.CTkFrame(self.standings_main_frame)
+            frame.grid(row=1, column=0, padx=PADX, pady=PADY)
 
-        self.standings_display_frame = ctk.CTkFrame(self.standings_main_frame)
-        self.standings_display_frame.grid(row=1, column=0, padx=PADX, pady=PADY)
+            if filter_type == "Division":
+                self.render_group_standings(self.division_standings, frame)
+                
+            elif filter_type == "Wild Card":
+                pass
 
-        if filter_type == "Division":
+            elif filter_type == "Conference":
+                self.render_group_standings(self.conference_standings, frame)        
 
-            self.render_group_standings(self.division_standings, self.standings_display_frame)
-            
-        elif filter_type == "Wild Card":
-            pass
+            elif filter_type == "Overall":
+                for row, team in enumerate(self.overall_standings): 
+                    self.render_team_row(row, team, frame)
 
-        elif filter_type == "Conference":
-            self.render_group_standings(self.conference_standings, self.standings_display_frame)        
+            self.standings_frame_list[filter_type] = frame #add the created frame to the standings frame list to be cached for later
+        else:
+            frame = self.standings_frame_list[filter_type]
+            frame.grid(row=1, column=0, padx=PADX, pady=PADY)
 
-        elif filter_type == "Overall":
-            for row, team in enumerate(self.overall_standings): 
-                self.render_team_row(row, team, self.standings_display_frame)
+        self.standings_current_frame = frame #set the active frame to standings_display frame so it can be forgotten in the hasattr
+
 
     def render_group_standings(self, grouped_data, frame):
         """Function which creates a label of category and then calls render team row to display teams in that category"""
         current_row = 0
         for group_name, teams in grouped_data.items():
-            conference_label = ctk.CTkLabel(self.standings_display_frame,
+            conference_label = ctk.CTkLabel(frame,
                                             text=group_name,
                                             font=("IMPACT", 20),
                                             anchor="w")
