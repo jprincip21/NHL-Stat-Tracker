@@ -9,8 +9,6 @@ from datetime import datetime, date
 from assets.constants import *
 from utilities import get_games_by_date, get_image_light_dark, get_team_logo
 
-#TODO: Add Today button to send user back to current date if a different one is selected, Disable Standings and Scores button when selected.
-
 class ScoresFrame(ctk.CTkFrame):
     """Create Frame for displaying scores"""
     def __init__(self, parent):
