@@ -161,11 +161,12 @@ class ScoresFrame(ctk.CTkFrame):
 
     def refresh_games(self):
         """Refresh games using background thread and show progress bar."""
-        
-        if hasattr(self, "games_frame"): #If self has games frame, Remove it
-                self.games_frame.grid_forget()
-
+                
         print("Refreshing...")
+        
+        # Destroy old frame
+        if hasattr(self, "games_frame"):
+            self.games_frame.grid_forget()
 
         # Show and start progress bar
         self.progress_bar.set(0)
@@ -188,10 +189,6 @@ class ScoresFrame(ctk.CTkFrame):
     def update_games_display(self, data):
         """Safely update the UI with new game data."""
         self.games_data = data
-
-        # Destroy old frame
-        if hasattr(self, "games_frame"):
-            self.games_frame.destroy()
 
         #Remove Progress bar
         self.progress_bar.grid_remove() 
