@@ -20,7 +20,7 @@ class Application(ctk.CTk):
         ctk.set_appearance_mode("light")
         self.main_area = None
         self.frames = {ScoresFrame : ScoresFrame(self), 
-                       StandingsFrame : StandingsFrame(self)}
+                       StandingsFrame : StandingsFrame(self)} #Pre Load Frames
         
         
         self.columnconfigure(0, weight=0) #Side Bar (Static Size)
