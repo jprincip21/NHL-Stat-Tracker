@@ -112,24 +112,23 @@ class ScoresFrame(ctk.CTkFrame):
     
     def date_selected(self, event=None):
         """Return the date when selected"""
-        new_date = self.calendar_widget.get_date()
-
-        if new_date == self.selected_date: #If Same date is selected do nothing.
-            print("Same date selected... No Change")
-            self.calendar_widget.destroy()
-            self.calendar_visible = False
-            return 
+        if event is not None: #If today button is not clicked
         
-        if event is not None: #If today button is not clicked Get date from Calendar
+            new_date = self.calendar_widget.get_date()
+
+            if new_date == self.selected_date: #If Same date is selected do nothing.
+                print("Same date selected... No Change")
+                self.calendar_widget.destroy()
+                self.calendar_visible = False
+                return          
+            
             self.selected_date = self.calendar_widget.get_date() #Grab Selected Date
+            self.calendar_widget.destroy() #Destroy the calendar Widget
+            self.calendar_visible = False #Update Visibility
 
-        self.date_label.configure(text=self.selected_date) #Update Date label
-        self.calendar_widget.destroy() #Destroy the calendar Widget
-        self.calendar_visible = False #Update Visibility
-        
+
         #print("Selected date:", self.selected_date) #FOR TESTING
-
-        self.games_frame.grid_forget()
+        self.date_label.configure(text=self.selected_date) #Update Date label
         
         # if self.refresh_job is not None:
         #     self.stop_auto_refresh()
@@ -145,7 +144,7 @@ class ScoresFrame(ctk.CTkFrame):
 
     def scheduled_refresh(self):
         """Refreshes GamesDisplayFrame After 30 Seconds"""
-        
+
         if self.selected_date == str(date.today()):
             print("Scheduled Refresh...")
             self.refresh_games()
@@ -163,6 +162,9 @@ class ScoresFrame(ctk.CTkFrame):
     def refresh_games(self):
         """Refresh games using background thread and show progress bar."""
         
+        if hasattr(self, "games_frame"): #If self has games frame, Remove it
+                self.games_frame.grid_forget()
+
         print("Refreshing...")
 
         # Show and start progress bar
