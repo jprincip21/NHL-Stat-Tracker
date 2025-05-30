@@ -167,6 +167,27 @@ def get_standings():
             "last_ten" : f"{team["l10Wins"]}-{team["l10Losses"]}-{team["l10OtLosses"]}"
         })
 
+           #Example Usage Of standings Varible
+
+            # for i, team in enumerate(standings):
+            #     print(f"{team[i]["team_name"]}")
+            #     print(f"{team[i]["team_logo"]}")
+            #     print(f"{team[i]["conference"]}")
+
+            #     print(f"{team[i]["division"]}")
+            #     print(f"{team[i]["games_played"]}")
+            #     print(f"{team[i]["points"]}")
+
+            #     print(f"{team[i]["points_percent"]}")
+            #     print(f"{team[i]["regulation_wins"]}")
+
+            #     print(f"{team[i]["goals_for"]}")
+            #     print(f"{team[i]["goals_against"]}")
+            #     print(f"{team[i]["goals_diff"]}")
+            #     print(f"{team[i]["shootout"]}")
+            #     print(f"{team[i]["last_ten"]}")
+            #     print("-" * 30) 
+
     return standings
         
 
