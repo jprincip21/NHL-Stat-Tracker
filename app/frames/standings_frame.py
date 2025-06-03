@@ -202,8 +202,8 @@ class StandingsFrame(ctk.CTkFrame):
         
         else:
             for button in self.filter_buttons:
-                button.configure(state="enabled")
-
+                button.configure(state="enabled") #After Standings Are fetched activate Buttons.
+   
         if hasattr(self, "standings_current_frame") and self.standings_current_frame is not None: 
             self.standings_current_frame.grid_forget() #Hide current frame if there is one being displayed
         
@@ -239,14 +239,12 @@ class StandingsFrame(ctk.CTkFrame):
             
             current_row +=1
             for division, teams in divisions.items():
-                self.create_label(frame, division, row=current_row, font=("IMPACT", 16), padx=10, pady=10)
+                self.create_label(frame, division, row=current_row, font=("IMPACT", 18), padx=10, pady=10)
                 current_row +=1
 
                 for team in teams:
                     self.render_team_row(current_row, team, frame)
                     current_row +=1
-           
-
 
     def render_group_standings(self, grouped_data, frame, current_row=0):
         """Function which creates a label of category and then calls 
