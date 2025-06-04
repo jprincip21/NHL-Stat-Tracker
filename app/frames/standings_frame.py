@@ -154,9 +154,10 @@ class StandingsFrame(ctk.CTkFrame):
 
     def process_standings(self, standings):
         self.overall_standings = standings
-            
+        
         self.organize_standings()
-
+        print("Standings Processed...\n")
+        
         self.progress_bar.grid_remove() 
         self.progress_bar.stop()
         self.change_filter(self.division_btn, "Division") #Sets Default Frame
