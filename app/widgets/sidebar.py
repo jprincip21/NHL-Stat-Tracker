@@ -9,7 +9,7 @@ from app.frames import ScoresFrame, StandingsFrame
 class Sidebar(ctk.CTkFrame):
     """Side Bar of the application"""
      
-    def __init__(self, parent, update_frame):
+    def __init__(self, parent, starting_theme, update_frame):
         super().__init__(parent, width=75)
         self.update_frame = update_frame
         self.active_button = None
@@ -41,7 +41,6 @@ class Sidebar(ctk.CTkFrame):
 
         self.grid_rowconfigure(3, weight=1)  # Spacer
 
-        starting_theme = get_display_mode()
         self.theme = ctk.StringVar(self, value=starting_theme)
         self.theme_button = self.create_button(theme_icon, 4, command=self.change_theme)
         self.theme_button.configure(hover="false")
