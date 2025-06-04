@@ -3,7 +3,7 @@ from tkinter import ttk
 import customtkinter as ctk
 
 from assets.constants import *
-from app import get_image_default, get_image_light_dark
+from app import get_image_default, get_image_light_dark, get_display_mode, update_display_mode
 from app.frames import ScoresFrame, StandingsFrame
 
 class Sidebar(ctk.CTkFrame):
@@ -41,7 +41,8 @@ class Sidebar(ctk.CTkFrame):
 
         self.grid_rowconfigure(3, weight=1)  # Spacer
 
-        self.theme = ctk.StringVar(self, value="light")
+        starting_theme = get_display_mode()
+        self.theme = ctk.StringVar(self, value=starting_theme)
         self.theme_button = self.create_button(theme_icon, 4, command=self.change_theme)
         self.theme_button.configure(hover="false")
     
@@ -64,11 +65,14 @@ class Sidebar(ctk.CTkFrame):
         theme = self.theme.get()
 
         if theme == "light":
+            
             ctk.set_appearance_mode("dark")
             self.theme.set("dark")
+            update_display_mode("dark")
         else:
             ctk.set_appearance_mode("light")
             self.theme.set("light")
+            update_display_mode("light")
 
     def switch_frame(self, frame_class, clicked_button):
         """Updates frame and buttons"""
