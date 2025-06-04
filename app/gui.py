@@ -5,6 +5,7 @@ import customtkinter as ctk
 from assets.constants import *
 from app.widgets import Sidebar
 from app.frames import *
+from app.database.db_handler import get_display_mode
 
 
 class Application(ctk.CTk):
@@ -12,12 +13,16 @@ class Application(ctk.CTk):
     def __init__(self):  
         super().__init__()
 
+        
+
         self.title("NHL Stat Tracker")
         self.geometry("900x600") 
         self.iconbitmap(LOGO_ICON)
         self.resizable(0,0) #Disable Maximizing
-        #self.state('zoomed') #Start Maximized
-        ctk.set_appearance_mode("light")
+
+        theme = get_display_mode()
+        ctk.set_appearance_mode(theme)
+        
         self.main_area = None
         self.frames = {ScoresFrame : ScoresFrame(self), 
                        StandingsFrame : StandingsFrame(self)} #Pre Load Frames
