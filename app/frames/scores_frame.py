@@ -117,7 +117,7 @@ class ScoresFrame(ctk.CTkFrame):
             new_date = self.calendar_widget.get_date()
 
             if new_date == self.selected_date: #If Same date is selected do nothing.
-                print("Same date selected... No Change")
+                print("Same date selected... No Change\n")
                 self.calendar_widget.destroy()
                 self.calendar_visible = False
                 return          
@@ -146,7 +146,7 @@ class ScoresFrame(ctk.CTkFrame):
         """Refreshes GamesDisplayFrame After 30 Seconds"""
 
         if self.selected_date == str(date.today()):
-            print("Scheduled Refresh...")
+            print("Scheduled Refresh...\n")
             self.refresh_games()
             self.refresh_job = self.after(30000, self.scheduled_refresh)
             
@@ -155,14 +155,14 @@ class ScoresFrame(ctk.CTkFrame):
 
     def stop_auto_refresh(self):
         if hasattr(self, 'refresh_job') and self.refresh_job is not None:
-            print("Cancelled Scheduled Refresh...")
+            print("Cancelled Scheduled Refresh...\n")
             self.after_cancel(self.refresh_job)
             self.refresh_job = None
 
     def refresh_games(self):
         """Refresh games using background thread and show progress bar."""
                 
-        print("Refreshing...")
+        print("Refreshing...\n")
         
         # Destroy old frame
         if hasattr(self, "games_frame"):

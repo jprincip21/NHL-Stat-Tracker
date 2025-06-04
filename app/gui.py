@@ -12,9 +12,7 @@ class Application(ctk.CTk):
     """GUI Logic for application"""
     def __init__(self):  
         super().__init__()
-
         
-
         self.title("NHL Stat Tracker")
         self.geometry("900x600") 
         self.iconbitmap(LOGO_ICON)
@@ -33,7 +31,7 @@ class Application(ctk.CTk):
         self.rowconfigure(0, weight=1) #Strech Frames to fill screen vertically
 
         #Side Bar Placement With access to Show Frame Function
-        self.side_bar = Sidebar(self, self.update_frame)
+        self.side_bar = Sidebar(self, theme, self.update_frame)
         self.side_bar.grid(row=0, column=0, pady=PADY, padx=PADX, sticky="nsw") #Placed on Left of Screen, sticks to Top, Bottom & Left
         
 
