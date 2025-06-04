@@ -133,7 +133,7 @@ class StandingsFrame(ctk.CTkFrame):
 
     def fetch_standings(self):
         """Starts thread for Fetching Standings and Creates Progress bar"""
-        print("Fetching Standings...")
+        print("Fetching Standings...\n")
 
         self.progress_bar.set(0)
         self.progress_bar.start()
