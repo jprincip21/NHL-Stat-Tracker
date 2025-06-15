@@ -6,11 +6,11 @@
 
 ## 📂 Table of Contents
 
-- [About the Project](#about-the-project)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Screenshots](#screenshots)
-- [Contact](#contact)
+- [About the Project](#📌-about-the-project)
+- [Features](#✨-features)
+- [Technologies Used](#🧰-technologies-used)
+- [Screenshots](#🖼-screenshots)
+- [Contact](#📬-contact)
 
 ---
 
