@@ -34,7 +34,7 @@ The NHL Stat Tracker is a personal project of mine that I enjoy working on and w
 In the future I have plans to add features such as: 
 - Viewing season player stat leaders
 - Viewing game player stats (Live and Finished)
-- Adding Favourite Teams
+- Adding favourite teams
 - Notifications for games
 
 ---
