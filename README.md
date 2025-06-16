@@ -53,6 +53,6 @@ In the future I have plans to add features such as:
 
 ## 📬 Contact
 **Jonathan Principato**
-- Email: [jonathan.principato@gmail.com](jonathan.principato@gmail.com)
+- Email: [jonathan.principato@gmail.com](mailto:jonathan.principato@gmail.com)
 - GitHub: [@jprincip21](https://github.com/jprincip21)
 
