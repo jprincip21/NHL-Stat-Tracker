@@ -25,10 +25,10 @@ The NHL Stat Tracker is a personal project of mine that I enjoy working on and w
 
 ## ✨ Features
 
-- View Live games
-- View Previous games
-- View Future games
+- View live game scores and time remaining
+- View previous games by date
 - View current season standings
+- Various standings filters
 - Light and Dark mode
 
 In the future I have plans to add features such as: 
