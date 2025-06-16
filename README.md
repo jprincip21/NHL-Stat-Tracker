@@ -1,4 +1,4 @@
-# NHL Stat Tracker <img src="assets/Icons/logo.png" alt="Logo" width="40" style="vertical-align:middle;" />
+# <img src="assets/Icons/logo.png" alt="Logo" width="40" style="vertical-align:middle;" /> NHL Stat Tracker 
 
 > A simple and interactive NHL statistics tracker that lets you view games and league standings in real time.
 
