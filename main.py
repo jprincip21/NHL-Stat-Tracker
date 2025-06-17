@@ -1,4 +1,4 @@
-from app import Application, initialize_database, update_display_mode, get_display_mode
+from app import Application, initialize_database
 
 def main():
     
